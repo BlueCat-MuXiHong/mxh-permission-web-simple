@@ -196,6 +196,48 @@ export default {
         font-size: 14px;
         padding-top: 5px;
     }
+    
+    /* 验证组件移动端优化 */
+    .slider-verify-container {
+        touch-action: none; /* 防止触摸设备上的滚动干扰滑块操作 */
+        
+        /* 响应式调整 */
+        @media (max-width: 576px) {
+            .slider-verify-track {
+                height: 40px; /* 增加滑块高度，提高触摸友好性 */
+            }
+            
+            .slider-verify-button {
+                width: 45px; /* 增加滑块按钮宽度 */
+                height: 40px; /* 增加滑块按钮高度 */
+            }
+        }
+    }
+    
+    /* 点击验证组件移动端优化 */
+    .verify-container {
+        @media (max-width: 576px) {
+            .verify-img-panel {
+                touch-action: manipulation; /* 优化触摸操作 */
+            }
+            
+            .verify-tips {
+                font-size: 14px; /* 调整提示文字大小 */
+                padding: 8px 0; /* 增加内边距，提高可点击区域 */
+            }
+        }
+    }
+    
+    /* 触摸设备上的表单元素优化 */
+    @media (hover: none) and (pointer: coarse) {
+        .el-form-item__content {
+            min-height: 44px; /* 确保足够的触摸区域 */
+        }
+        
+        .el-button {
+            min-height: 44px; /* 确保按钮有足够的触摸区域 */
+        }
+    }
 }
 </style>
 
@@ -217,14 +259,27 @@ $gradient-end: #5B86E5;
 
 /* 现代化登录界面样式 */
 .login-container {
-    min-height: 100vh;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     background-image: linear-gradient(0deg, #30cfd0 0%, #330867 100%);
-    overflow: hidden;
+    overflow: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    touch-action: manipulation;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+    /* 确保表单始终在视口内 */
+    .login-form {
+        margin: auto;
+        position: relative;
+    }
     
     /* 添加网格线条效果 */
     &::after {
@@ -258,6 +313,41 @@ $gradient-end: #5B86E5;
         );
         z-index: 0;
         pointer-events: none;
+    }
+    
+    /* 响应式背景优化 */
+    @media (max-width: 768px) {
+        &::after {
+            background-size: 60px 60px; /* 减少网格密度，提高性能 */
+            opacity: 0.8;
+        }
+        
+        &::before {
+            background-image: repeating-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.02) 0px,
+                    rgba(255, 255, 255, 0.02) 1px,
+                    transparent 1px,
+                    transparent 20px
+            );
+        }
+    }
+    
+    @media (max-width: 576px) {
+        &::after {
+            background-size: 70px 70px;
+            opacity: 0.6;
+        }
+        
+        &::before {
+            background-image: repeating-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.01) 0px,
+                    rgba(255, 255, 255, 0.01) 1px,
+                    transparent 1px,
+                    transparent 25px
+            );
+        }
     }
     
     /* 波浪容器 */
@@ -305,23 +395,86 @@ $gradient-end: #5B86E5;
         }
     }
     
+    /* 响应式波浪动画优化 */
+    @media (max-width: 768px) {
+        .wave1 {
+            animation-duration: 25s; /* 减慢动画速度，减少资源消耗 */
+        }
+        
+        .wave2 {
+            animation-duration: 20s;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .wave1 {
+            animation-duration: 30s;
+            height: 80px; /* 减小波浪高度 */
+        }
+        
+        .wave2 {
+            animation-duration: 25s;
+            height: 80px;
+        }
+    }
+    
+    @media (max-width: 375px) {
+        .wave1, .wave2 {
+            display: none; /* 在最小屏幕上完全隐藏波浪动画 */
+        }
+    }
+    
     .login-form {
         position: relative;
-        width: 450px;
-        max-width: 90%;
+        width: 400px;
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         text-align: center;
-        padding: 50px 40px;
+        padding: 40px 35px;
         z-index: 1;
         transition: all 0.3s ease;
         border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow: hidden; /* 防止内容溢出 */
+        
+        /* 只在移动端应用最大宽度 */
+        @media (max-width: 992px) {
+            max-width: 90vw;
+        }
         
         &:hover {
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 触摸设备上不使用悬停效果，改为触摸时的反馈 */
+            &:hover {
+                transform: none;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            }
+            
+            &:active {
+                transform: translateY(-2px);
+            }
+        }
+        
+        /* 响应式表单容器优化 */
+        @media (max-width: 768px) {
+            padding: 40px 30px;
+        }
+        
+        @media (max-width: 576px) {
+            padding: 35px 25px;
+            max-width: 92%;
+        }
+        
+        @media (max-width: 375px) {
+            padding: 30px 20px;
+            max-width: 95%;
+            border-radius: 12px;
         }
     }
     
@@ -342,6 +495,36 @@ $gradient-end: #5B86E5;
         svg {
             height: 15px;
             width: 15px;
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 增加图标大小，提高可见性 */
+            svg {
+                height: 16px;
+                width: 16px;
+            }
+            
+            /* 触摸设备上不使用悬停效果 */
+            &:hover {
+                color: rgba(255, 255, 255, 0.8);
+            }
+            
+            /* 增强触摸反馈 */
+            &:active {
+                color: white;
+            }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 375px) {
+            width: 25px;
+            padding: 5px 3px 8px 3px;
+            
+            svg {
+                height: 14px;
+                width: 14px;
+            }
         }
     }
     
@@ -404,6 +587,33 @@ $gradient-end: #5B86E5;
             height: 16px;
             width: 16px;
         }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 增加触摸区域 */
+            width: 32px;
+            height: 32px;
+            right: 10px;
+            
+            /* 触摸设备上不使用悬停效果 */
+            &:hover {
+                color: rgba(255, 255, 255, 0.7);
+                background-color: transparent;
+                transform: translateY(-50%);
+            }
+            
+            /* 增强触摸反馈 */
+            &:active {
+                color: white;
+                background-color: rgba(255, 255, 255, 0.2);
+                transform: translateY(-50%) scale(0.95);
+            }
+            
+            svg {
+                height: 18px;
+                width: 18px;
+            }
+        }
     }
     
     .el-form-item {
@@ -462,7 +672,6 @@ $gradient-end: #5B86E5;
         }
         
         input {
-            
             background: transparent;
             border: 0;
             -webkit-appearance: none;
@@ -498,6 +707,25 @@ $gradient-end: #5B86E5;
                 background-clip: content-box !important;
                 caret-color: white !important;
             }
+            
+            /* 触摸设备优化 */
+            @media (hover: none) and (pointer: coarse) {
+                /* 增加输入框高度，提高触摸友好性 */
+                padding: 14px 25px;
+                font-size: 16px;
+                
+                /* 增加触摸区域 */
+                min-height: 24px;
+            }
+        }
+        
+        /* 触摸设备上的响应式宽度调整 */
+        @media (max-width: 576px) {
+            width: 82%;
+        }
+        
+        @media (max-width: 375px) {
+            width: 80%;
         }
     }
     
@@ -522,13 +750,145 @@ $gradient-end: #5B86E5;
         &:active {
             transform: translateY(1px);
         }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 增加按钮高度，提高触摸友好性 */
+            padding: 14px 12px;
+            
+            /* 触摸设备上不使用悬停效果 */
+            &:hover {
+                transform: none;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                opacity: 1;
+            }
+            
+            /* 增强触摸反馈 */
+            &:active {
+                transform: translateY(2px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                opacity: 0.9;
+            }
+        }
     }
 }
 
 /* 响应式调整 */
+@media (max-width: 992px) {
+    .login-container .login-form {
+        width: 400px;
+        padding: 45px 35px;
+    }
+    
+    .login-container .title-container .title {
+        font-size: 26px;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container .login-form {
+        width: 380px;
+        padding: 40px 30px;
+    }
+    
+    .login-container .title-container .title {
+        font-size: 24px;
+    }
+    
+    .login-container .el-form-item {
+        margin-top: 25px;
+    }
+    
+    .login-container .el-button {
+        padding: 11px;
+    }
+}
+
 @media (max-width: 576px) {
     .login-container .login-form {
-        padding: 40px 20px;
+        width: 90%;
+        max-width: 350px;
+        padding: 35px 20px;
+    }
+    
+    .login-container .title-container {
+        margin-bottom: 30px;
+    }
+    
+    .login-container .title-container .title {
+        font-size: 22px;
+    }
+    
+    .login-container .el-form-item {
+        margin-top: 20px;
+    }
+    
+    .login-container .el-input input {
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+    
+    .login-container .el-button {
+        padding: 10px;
+        font-size: 15px;
+        margin-top: 10px !important;
+    }
+    
+    /* 简化波浪动画效果，提高性能 */
+    .login-container .wave1,
+    .login-container .wave2 {
+        animation-duration: 30s; /* 减慢动画速度，减少资源消耗 */
+    }
+    
+    /* 增加触摸区域 */
+    .login-container .show-pwd {
+        width: 30px;
+        height: 30px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 375px) {
+    .login-container .login-form {
+        width: 95%;
+        padding: 30px 15px;
+    }
+    
+    .login-container .title-container {
+        margin-bottom: 25px;
+    }
+    
+    .login-container .title-container .title {
+        font-size: 20px;
+    }
+    
+    .login-container .el-form-item {
+        margin-top: 18px;
+    }
+    
+    .login-container .svg-container {
+        width: 25px;
+        padding: 5px 3px 8px 3px;
+    }
+    
+    .login-container .el-input {
+        width: 87%;
+    }
+    
+    .login-container .el-input input {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .login-container .el-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    /* 进一步简化视觉效果 */
+    .login-container::after,
+    .login-container::before {
+        background-size: 40px 40px; /* 减小网格线条密度 */
     }
 }
 </style>
