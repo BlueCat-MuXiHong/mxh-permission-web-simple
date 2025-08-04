@@ -1,11 +1,20 @@
-/*
- * 通用样式
- * 包含项目中常用的样式类和组件样式覆盖
+/**
+ * 通用样式库
+ * 
+ * 这个文件包含项目中常用的工具类样式和组件样式覆盖
+ * 采用类似Bootstrap的实用工具类设计理念，提供可复用的样式类
+ * 使用这些类可以快速构建界面，减少编写重复的CSS代码
  */
 
+// 导入变量定义，确保使用统一的设计标准
 @import './variables.scss';
 
-/* 布局相关 */
+/**
+ * Flexbox布局工具类
+ * 
+ * 这些类提供了常用的flex布局配置，可以快速设置元素的排列方式
+ * 使用方法：<div class="flex align-center justify-between">...</div>
+ */
 .flex {
   display: flex;
 }
@@ -54,7 +63,24 @@
   align-items: stretch;
 }
 
-/* 间距 */
+/**
+ * 间距工具类
+ * 
+ * 提供统一的外边距(margin)和内边距(padding)工具类
+ * 命名规则：
+ * - m-* : 四周外边距
+ * - mt-*, mr-*, mb-*, ml-* : 上、右、下、左外边距
+ * - p-* : 四周内边距
+ * - pt-*, pr-*, pb-*, pl-* : 上、右、下、左内边距
+ * 
+ * 数值说明：
+ * - 0: 0px
+ * - 1: 4px
+ * - 2: 8px
+ * - 3: 16px
+ * - 4: 24px
+ * - 5: 32px
+ */
 .m-0 {
   margin: 0;
 }
@@ -295,7 +321,13 @@
   padding-left: 32px;
 }
 
-/* 文本相关 */
+/**
+ * 文本样式工具类
+ * 
+ * 提供文本对齐、颜色、字体大小和字重等常用文本样式
+ * 这些类可以快速应用于任何文本元素，保持整个应用的文本风格一致
+ * 颜色值使用变量定义，确保整个应用的颜色主题一致性
+ */
 .text-left {
   text-align: left;
 }
@@ -364,7 +396,13 @@
   font-size: $font-size-extra-large;
 }
 
-/* 边框 */
+/**
+ * 边框工具类
+ * 
+ * 提供边框样式的快速应用方式
+ * 使用统一的边框颜色变量($border-color-base)，保持设计一致性
+ * 包含四个方向的单独边框类和移除边框的工具类
+ */
 .border {
   border: 1px solid $border-color-base;
 }
@@ -389,7 +427,13 @@
   border: none !important;
 }
 
-/* 圆角 */
+/**
+ * 圆角工具类
+ * 
+ * 提供不同大小的圆角样式
+ * 从无圆角(0)到完全圆形(50%)的多种选择
+ * 可用于按钮、卡片、图片等元素，增强UI的现代感
+ */
 .rounded {
   border-radius: $border-radius-base;
 }
@@ -406,7 +450,13 @@
   border-radius: $border-radius-circle;
 }
 
-/* 阴影 */
+/**
+ * 阴影效果工具类
+ * 
+ * 提供不同层级的阴影效果，用于创建UI元素的深度感
+ * 从轻微阴影到强烈阴影的多个级别
+ * 适用于卡片、弹窗、按钮等需要立体感的元素
+ */
 .shadow {
   box-shadow: $box-shadow-base;
 }
@@ -419,7 +469,13 @@
   box-shadow: $box-shadow-dark;
 }
 
-/* 显示与隐藏 */
+/**
+ * 显示与隐藏工具类
+ * 
+ * 控制元素的可见性和显示方式
+ * 包含完全隐藏、仅视觉隐藏但保留可访问性、显示/隐藏切换等功能
+ * 适用于响应式设计和条件性显示内容
+ */
 .d-none {
   display: none !important;
 }
@@ -448,7 +504,13 @@
   visibility: hidden !important;
 }
 
-/* 溢出处理 */
+/**
+ * 溢出处理工具类
+ * 
+ * 控制内容溢出容器时的行为
+ * 包括隐藏溢出内容、显示滚动条、文本溢出省略等处理方式
+ * 对于长文本、固定尺寸容器内的动态内容特别有用
+ */
 .overflow-hidden {
   overflow: hidden !important;
 }
@@ -467,7 +529,13 @@
   white-space: nowrap;
 }
 
-/* 鼠标样式 */
+/**
+ * 鼠标样式工具类
+ * 
+ * 定义不同的鼠标指针样式，提升交互体验
+ * 包括指示可点击、禁用状态、拖拽等不同交互状态
+ * 有助于提高用户界面的可用性和直观性
+ */
 .cursor-pointer {
   cursor: pointer !important;
 }
@@ -480,12 +548,24 @@
   cursor: not-allowed !important;
 }
 
-/* 过渡效果 */
+/**
+ * 过渡效果工具类
+ * 
+ * 提供常用的CSS过渡动画效果
+ * 可应用于悬停、点击、状态变化等交互场景
+ * 使界面变化更加平滑自然，提升用户体验
+ */
 .transition {
   transition: $transition-base;
 }
 
-/* 全局过渡动画 */
+/**
+ * 全局过渡动画
+ * 
+ * 定义可在整个应用中复用的Vue过渡动画
+ * 包括淡入淡出和滑动效果
+ * 可通过Vue的transition组件使用，如：<transition name="fade">...</transition>
+ */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -507,7 +587,13 @@
   opacity: 0;
 }
 
-/* Element UI 组件样式覆盖 */
+/**
+ * Element UI 组件样式覆盖
+ * 
+ * 自定义 Element UI 组件的默认样式，使其符合项目设计规范
+ * 包括按钮、表单、对话框等组件的样式调整
+ * 保持组件功能不变的同时，实现视觉上的一致性
+ */
 .el-button {
   &:hover, &:focus {
     transform: translateY(-1px);
@@ -580,7 +666,13 @@
   }
 }
 
-/* 头像上传组件样式 */
+/**
+ * 头像上传组件样式
+ * 
+ * 自定义Element UI的上传组件样式，专用于头像上传功能
+ * 包含悬停效果和交互反馈
+ * 使用与系统主题一致的边框和阴影效果
+ */
 .avatar-uploader .el-upload {
   border: 1px dashed $border-color-base;
   border-radius: $border-radius-base;
