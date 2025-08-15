@@ -12,7 +12,8 @@
                 :unique-opened="false"
                 mode="vertical"
             >
-                <sidebar-item v-for="route in permission_routes" :key="route.path" :base-path="route.path" :item="route"/>
+                <sidebar-item v-for="route in permission_routes" :key="route.path" :base-path="route.path"
+                              :item="route"/>
             </el-menu>
         </el-scrollbar>
     </div>
@@ -35,44 +36,24 @@ export default {
             'sidebar',
             'permission_routes'
         ]),
-        /**
-         * 侧边栏状态
-         * @returns {any} 侧边栏状态
-         */
-        sidebar() {
-            return this.$store.state.app.sidebar
-        },
         activeMenu() {
             const route = this.$route
             const {meta, path} = route
-            // if set path, the sidebar will highlight the path you set
             if (meta.activeMenu) {
                 return meta.activeMenu
             }
             return path
         },
+        showLogo() {
+            return true
+        },
         variables() {
             return variables
         },
-    },
-    data() {
-        return {
-            showLogo: true,
-            isCollapse: false
-        }
-    },
-    methods: {
-        /**
-         * 折叠侧边栏
-         */
-        handleCollapse() {
-            this.isCollapse = !this.isCollapse
+        isCollapse() {
+            return !this.sidebar.opened
         }
     }
     
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
