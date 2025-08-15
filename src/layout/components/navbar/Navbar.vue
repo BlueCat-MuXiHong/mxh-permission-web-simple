@@ -1,5 +1,5 @@
 <template>
-    <div class="navbar">
+    <div align="center" class="navbar" justify="between">
         <!--折叠菜单-->
         <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar"/>
         <!--面包屑-->
@@ -369,14 +369,19 @@ export default {
     position: relative;
     background: #fff;
     box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
     
     .hamburger-container {
         line-height: 46px;
         height: 100%;
-        float: left;
         cursor: pointer;
         transition: background .3s;
         -webkit-tap-highlight-color: transparent;
+        padding: 0 15px;
+        margin-right: 10px;
         
         &:hover {
             background: rgba(0, 0, 0, .025)
@@ -384,17 +389,16 @@ export default {
     }
     
     .breadcrumb-container {
-        float: left;
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     
     .right-menu {
-        float: right;
+        display: flex;
+        align-items: center;
         height: 100%;
-        line-height: 50px;
-        
-        &:focus {
-            outline: none;
-        }
         
         .right-menu-item {
             display: inline-block;
@@ -415,25 +419,42 @@ export default {
         }
         
         .avatar-container {
-            margin-right: 30px;
+            margin-right: 15px;
             
             .avatar-wrapper {
-                margin-top: 5px;
                 position: relative;
+                display: flex;
+                align-items: center;
                 
                 .user-avatar {
                     cursor: pointer;
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 10px;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    object-fit: cover;
                 }
+            }
+        }
+    }
+    
+    @media (max-width: 768px) {
+        padding: 0 5px;
+        
+        .hamburger-container {
+            padding: 0 10px;
+        }
+        
+        .breadcrumb-container {
+            display: none;
+        }
+        
+        .right-menu {
+            .avatar-container {
+                margin-right: 10px;
                 
-                .el-icon-caret-bottom {
-                    cursor: pointer;
-                    position: absolute;
-                    right: -20px;
-                    top: 25px;
-                    font-size: 12px;
+                .avatar-wrapper .user-avatar {
+                    width: 32px;
+                    height: 32px;
                 }
             }
         }
