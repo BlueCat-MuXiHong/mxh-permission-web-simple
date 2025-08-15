@@ -9,7 +9,7 @@
         >
             <!--标题-->
             <div class="title-container">
-                <h3 class="title" style="white-space:pre">AI AGENT SYSTEM</h3>
+                <h3 class="title" style="white-space:pre">AI UNION SYSTEM</h3>
             </div>
             <!--用户名-->
             <el-form-item class="el-form-item" prop="username">

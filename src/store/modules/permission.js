@@ -51,7 +51,6 @@ function filterAsyncRouter(routes, roles) {
             let component = temp.component
             //判断该路由是否有组件
             if (route.component) {
-                console.log(route.component)
                 temp.component = component === 'Layout' ? Layout : (resolve) => require([`@/views${component}`], resolve)
             }
         }
