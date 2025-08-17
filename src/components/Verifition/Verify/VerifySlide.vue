@@ -53,7 +53,7 @@
     </div>
 </template>
 <script type="text/babel">
-import SvgIcon from "@/components/SvgIcon/svgIcon.vue";
+import SvgIcon from "@/components/icon/svgIcon.vue";
 import {aesEncrypt} from './../utils/ase'
 import {resetSize} from './../utils/util'
 import {checkCaptcha, getCaptcha} from '@/api/captcha'

@@ -12,10 +12,12 @@ import './icons'
 //路由首位
 import '@/permission'
 import resetForm from '@/utils/resetForm'
+import objCopy from '@/utils/objCopy'
 // 引入拖拽指令
 import '@/components/Dialog/js/dialogDrag.js'
 
 Vue.prototype.$resetForm = resetForm
+Vue.prototype.$objCopy = objCopy
 
 Vue.use(ElementUI)
 // 关闭Vue.js在生产环境下的启动提示信息

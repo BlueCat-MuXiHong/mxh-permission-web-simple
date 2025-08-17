@@ -1,5 +1,5 @@
 import Vue from "vue";
-import SvgIcon from "@/components/SvgIcon/svgIcon.vue";
+import SvgIcon from "@/components/icon/svgIcon.vue";
 
 // 导入并全局注册SvgIcon组件 - 使得可以在任何Vue组件中使用<svg-icon>标签
 // 批量导入SVG文件 - 通过require.context自动加载./svg目录下所有.svg文件
