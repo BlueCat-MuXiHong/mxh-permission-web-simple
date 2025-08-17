@@ -40,8 +40,8 @@
                     size="small"
                     class="user-form"
                 >
-                    <div class="form-content">
-                        <div class="form-left">
+                    <div :class="{ 'mobile-form': isMobile }" class="form-content">
+                        <div :class="{ 'mobile-form-item': isMobile }" class="form-left">
                             <el-form-item label="所属部门">
                                 <el-input v-model="user.departmentName" disabled></el-input>
                             </el-form-item>
@@ -58,7 +58,7 @@
                                 <el-input v-model="user.phone"></el-input>
                             </el-form-item>
                         </div>
-                        <div class="form-right">
+                        <div :class="{ 'mobile-form-item': isMobile }" class="form-right">
                             <el-form-item label="昵称">
                                 <el-input v-model="user.nickName"></el-input>
                             </el-form-item>
@@ -87,12 +87,10 @@
                                         <img v-if="user.avatar" :src="user.avatar" alt="用户头像" class="avatar-image">
                                         <i v-else class="el-icon-plus avatar-uploader-icon"/>
                                     </el-upload>
-                                    <div class="avatar-tip">点击上传头像<br></div>
                                 </div>
                             </el-form-item>
                         </div>
                     </div>
-                
                 </el-form>
             </div>
         </system-dialog>
@@ -114,25 +112,23 @@
                          class="password-form"
                          label-width="90px"
                 >
-                    <flex align="center" direction="column" justify="center">
+                    <div :class="{ 'mobile-password-form': isMobile }" class="password-form-content">
                         <el-form-item label="初始密码" prop="oldPassword">
-                            <el-input v-model="password.oldPassword" placeholder="请输入初始密码" style="width: 320px"
+                            <el-input v-model="password.oldPassword" placeholder="请输入初始密码"
                                       type="password"></el-input>
                         </el-form-item>
                         <el-form-item label="新密码" prop="newPassword">
-                            <el-input v-model="password.newPassword" placeholder="请输入新密码" style="width: 320px"
+                            <el-input v-model="password.newPassword" placeholder="请输入新密码"
                                       type="password"></el-input>
                         </el-form-item>
                         <el-form-item label="确认密码" prop="checkPassword">
-                            <el-input v-model="password.checkPassword" placeholder="请再次输入新密码" style="width: 320px"
+                            <el-input v-model="password.checkPassword" placeholder="请再次输入新密码"
                                       type="password"></el-input>
                         </el-form-item>
-                    </flex>
-                
+                    </div>
                 </el-form>
             </div>
         </system-dialog>
-    
     </div>
 </template>
 
@@ -208,6 +204,7 @@ export default {
             }
         }
         return {
+            isMobile: false, // 添加移动端检测
             rePasswordDialog: {
                 title: '修改密码',
                 width: 500,
@@ -221,8 +218,8 @@ export default {
             },
             userDialog: {
                 title: '个人中心',
-                width: 700,
-                height: 430,
+                width: 600,
+                height: 400,
                 visible: false
             },
             user: {
@@ -257,6 +254,10 @@ export default {
     methods: {
         toggleSideBar() {
             this.$store.dispatch('app/toggleSideBar')
+        },
+        // 检测设备类型
+        checkDevice() {
+            this.isMobile = window.innerWidth <= 768
         },
         /**
          * 点击退出登录
@@ -365,7 +366,14 @@ export default {
             // 强制重新渲染
             this.$forceUpdate()
         }
-    }
+    },
+    mounted() {
+        this.checkDevice()
+        window.addEventListener('resize', this.checkDevice)
+    },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.checkDevice)
+    },
 }
 </script>
 
@@ -554,6 +562,31 @@ export default {
     margin-right: 6px;
 }
 
+/* 移动端适配样式 */
+@media screen and (max-width: 768px) {
+    .mobile-form {
+        flex-direction: column;
+    }
+    
+    .mobile-form-item {
+        width: 100%;
+    }
+    
+    .form-content {
+        display: block;
+    }
+    
+    .avatar-container {
+        display: block;
+        text-align: center;
+    }
+    
+    .avatar-tip {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
+
 /* 修改密码表单样式 */
 .password-form {
     padding: 25px 15px 10px;
@@ -565,5 +598,40 @@ export default {
 
 .password-form ::v-deep .el-input__inner {
     padding-left: 15px;
+}
+
+.password-form-content {
+    width: 320px;
+    margin: 0 auto;
+}
+
+.password-form-content .el-form-item__label {
+    font-weight: 500;
+}
+
+/* 修改密码移动端适配样式 */
+@media screen and (max-width: 768px) {
+    .mobile-password-form {
+        width: 100%;
+    }
+    
+    .password-form {
+        padding: 15px 15px 5px;
+    }
+    
+    .password-form-content {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .password-form .el-form-item {
+        margin-bottom: 20px;
+    }
+    
+    .password-form ::v-deep .el-form-item__label {
+        line-height: 36px;
+        padding-right: 15px;
+        font-weight: 500;
+    }
 }
 </style>
