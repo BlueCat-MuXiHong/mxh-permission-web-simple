@@ -133,7 +133,6 @@ export default {
         .el-dialog__footer {
             padding: 10px 15px !important;
         }
-        
         .el-dialog__headerbtn {
             top: 15px !important;
         }
