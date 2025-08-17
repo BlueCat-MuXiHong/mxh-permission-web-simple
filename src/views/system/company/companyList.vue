@@ -1,26 +1,73 @@
 <template>
     <el-main>
         <!--  条件检索区域  -->
-        <!--  :inline 是否为行内 ref: 表单的ref label-width: 表单的label宽度 size: 表单的尺寸  -->
-        <el-form ref="searchForm" :inline="true" label-width="80px" size="small">
-            <el-form-item>
-                <el-input v-model="searchModel.companyName" placeholder="请输入单位名称"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-input v-model="searchModel.phone" placeholder="请输入单位电话"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button v-if="hasPermission('sys:company:select')" icon="el-icon-search" type="primary"
-                           @click="search">查询
-                </el-button>
-                <el-button v-if="hasPermission('sys:company:select')" icon="el-icon-refresh-right" @click="resetValue">
-                    重置
-                </el-button>
-                <el-button v-if="hasPermission('sys:company:add')" icon="el-icon-plus" type="success"
-                           @click="openAddWindow">新增
-                </el-button>
-            </el-form-item>
-        </el-form>
+        <div :class="{'is-mobile': isMobile}" class="search-container">
+            <!-- 移动端折叠面板 -->
+            <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
+                <el-collapse-item name="1">
+                    <template slot="title">
+                        <i class="el-icon-search"></i> 搜索条件
+                        <span v-if="searchModel.companyName || searchModel.phone" class="collapse-summary">
+                            <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
+                            <template
+                                v-if="searchModel.phone">{{
+                                    searchModel.companyName ? ' / ' : ''
+                                }}电话: {{ searchModel.phone }}</template>
+                        </span>
+                    </template>
+                    <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
+                             size="small">
+                        <el-form-item label="单位名称">
+                            <el-input v-model="searchModel.companyName" clearable
+                                      placeholder="请输入单位名称"></el-input>
+                        </el-form-item>
+                        <el-form-item label="单位电话">
+                            <el-input v-model="searchModel.phone" clearable placeholder="请输入单位电话"></el-input>
+                        </el-form-item>
+                        <el-form-item class="mobile-button-group">
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
+                                       size="small" @click="resetValue">
+                                重置
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:company:add')"
+                                       icon="el-icon-plus"
+                                       size="small"
+                                       type="success"
+                                       @click="openAddWindow">新增
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-collapse-item>
+            </el-collapse>
+            
+            <!-- 桌面端常规表单 -->
+            <el-form v-else ref="searchForm" :inline="true" label-width="80px" size="small">
+                <el-form-item>
+                    <el-input v-model="searchModel.companyName" placeholder="请输入单位名称"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-input v-model="searchModel.phone" placeholder="请输入单位电话"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" type="primary"
+                               @click="search">查询
+                    </el-button>
+                    <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
+                               @click="resetValue">
+                        重置
+                    </el-button>
+                    <el-button v-if="hasPermission('sys:company:add') && !isMobile"
+                               icon="el-icon-plus"
+                               size="small"
+                               type="success"
+                               @click="openAddWindow">新增
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </div>
         <!--  表单区域  -->
         <el-table
             v-loading="loading"
@@ -28,6 +75,9 @@
             :height="tableHeight"
             border
             stripe
+            :class="{'el-table--mobile': isMobile}"
+            :header-cell-style="isMobile ? {padding: '5px 0'} : {}"
+            :size="isMobile ? 'mini' : 'medium'"
             style="width: 100%; margin-bottom: 10px"
         >
             <el-table-column align="center" label="序号" prop="id" width="80">
@@ -35,8 +85,9 @@
             </el-table-column>
             <el-table-column align="center" label="单位名称" prop="companyName"></el-table-column>
             <el-table-column align="center" label="单位电话" prop="phone"></el-table-column>
-            <el-table-column align="center" label="单位地址" prop="address"></el-table-column>
-            <el-table-column align="center" label="单位图标" prop="address">
+            <el-table-column :min-width="isMobile ? 150 : 'auto'" :show-overflow-tooltip="true" align="center" label="单位地址"
+                             prop="address"></el-table-column>
+            <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="单位图标" prop="address">
                 <template v-slot="scope">
                     <el-tooltip content="Top Center 提示文字" effect="dark" placement="top">
                         <div slot="content" style="text-align: center;min-width:180px;">
@@ -49,26 +100,50 @@
                     </el-tooltip>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="创建人" prop="createUserName"></el-table-column>
-            <el-table-column align="center" label="创建时间" prop="createTime"></el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column v-if="!isMobile" align="center" label="创建人" prop="createUserName"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="创建时间" prop="createTime"></el-table-column>
+            <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <template v-slot="scope">
-                    <el-button
-                        v-if="hasPermission('sys:company:edit')"
-                        icon="el-icon-edit-outline"
-                        size="mini"
-                        type="primary"
-                        @click="handleEdit(scope.row)"
-                    >编辑
-                    </el-button>
-                    <el-button
-                        v-if="hasPermission('sys:company:delete')"
-                        icon="el-icon-delete-solid"
-                        size="mini"
-                        type="danger"
-                        @click="handleDelete(scope.row)"
-                    >删除
-                    </el-button>
+                    <!-- 桌面端显示按钮 -->
+                    <template v-if="!isMobile">
+                        <el-button
+                            v-if="hasPermission('sys:company:edit')"
+                            icon="el-icon-edit-outline"
+                            size="mini"
+                            type="primary"
+                            @click="handleEdit(scope.row)"
+                        >编辑
+                        </el-button>
+                        <el-button
+                            v-if="hasPermission('sys:company:delete')"
+                            icon="el-icon-delete-solid"
+                            size="mini"
+                            type="danger"
+                            @click="handleDelete(scope.row)"
+                        >删除
+                        </el-button>
+                    </template>
+                    
+                    <!-- 移动端显示下拉菜单 -->
+                    <el-dropdown v-if="isMobile" trigger="click">
+                        <el-button size="mini" type="primary">
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:company:edit')"
+                                @click.native="handleEdit(scope.row)"
+                            >
+                                <i class="el-icon-edit-outline"></i> 编辑
+                            </el-dropdown-item>
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:company:delete')"
+                                @click.native="handleDelete(scope.row)"
+                            >
+                                <i class="el-icon-delete-solid"></i> 删除
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
                 </template>
             </el-table-column>
         </el-table>
@@ -80,7 +155,8 @@
                 :page-sizes="[10, 20, 30, 40, 50]"
                 :total="total"
                 background
-                layout="total, sizes, prev, pager, next, jumper"
+                :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+                :small="isMobile"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
             >
@@ -93,7 +169,7 @@
             :height="companyDialog.height"
             :title="companyDialog.title"
             :visible="companyDialog.visible"
-            :width="companyDialog.width"
+            :width="dialogWidth"
             @onClose="onClose"
             @onConfirm="onConfirm"
         >
@@ -103,8 +179,11 @@
                     :inline="false"
                     :model="company"
                     :rules="rules"
-                    label-width="80px"
+                    :class="{'mobile-company-form': isMobile}"
+                    :label-position="isMobile ? 'top' : 'right'"
                     size="small"
+                    :label-width="isMobile ? '70px' : '80px'"
+                    class="company-form"
                 >
                     <el-form-item label="单位名称" prop="companyName">
                         <el-input v-model="company.companyName" clearable size="small"></el-input>
@@ -116,31 +195,36 @@
                         <el-input v-model="company.address" size="small"></el-input>
                     </el-form-item>
                     <el-form-item label="公司图标" prop="companyLogo">
-                        <!-- 用户头像：待补充 -->
-                        <el-upload
-                            :action="uploadUrl"
-                            :before-upload="beforeAvatarUpload"
-                            :data="uploadHeader"
-                            :on-success="handleAvatarSuccess"
-                            :show-file-list="false"
-                            border
-                            class="avatar-uploader"
-                        >
-                            <img
-                                v-if="company.logo" :src="company.logo" alt=""
-                                class="el-upload-list__item-thumbnail" style="width: 100px;height: 100px"
+                        <div :class="{'mobile-upload-container': isMobile}" class="upload-container">
+                            <el-upload
+                                :action="uploadUrl"
+                                :before-upload="beforeAvatarUpload"
+                                :data="uploadHeader"
+                                :on-success="handleAvatarSuccess"
+                                :show-file-list="false"
+                                border
+                                class="avatar-uploader"
                             >
-                            <i v-else class="el-icon-plus avatar-uploader-icon"/>
-                            <span class="el-upload-list__item-actions">
-                  <span
-                      v-if="company.logo===''"
-                      class="el-upload-list__item-delete"
-                      @click="handleRemove(company.logo)"
-                  >
-                    <i class="el-icon-delete"></i>
-                  </span>
-                 </span>
-                        </el-upload>
+                                <img
+                                    v-if="company.logo" :src="company.logo" alt=""
+                                    class="el-upload-list__item-thumbnail" style="width: 100px;height: 100px"
+                                >
+                                <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                                <span class="el-upload-list__item-actions">
+                                    <span
+                                        v-if="company.logo===''"
+                                        class="el-upload-list__item-delete"
+                                        @click="handleRemove(company.logo)"
+                                    >
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                            </el-upload>
+                            <div v-if="isMobile" class="upload-tip">
+                                <p>图片尺寸不小于100*100</p>
+                                <p>大小不超过2M</p>
+                            </div>
+                        </div>
                     </el-form-item>
                 </el-form>
             </div>
@@ -159,7 +243,9 @@ export default {
     components: {Flex, SystemDialog},
     data() {
         return {
+            isMobile: false,
             loading: true,
+            searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
             searchModel: { //查询条件
                 pageNo: 1,//
                 pageSize: 20,
@@ -169,7 +255,7 @@ export default {
             companyDialog: {
                 title: '',
                 width: 500,
-                height: 300,
+                height: 350,
                 visible: false
             },
             company: {
@@ -191,7 +277,32 @@ export default {
             uploadUrl: process.env.VUE_APP_BASE_API + '/file/upload'
         }
     },
+    computed: {
+        /**
+         * 动态计算对话框宽度
+         */
+        dialogWidth() {
+            return this.isMobile ? window.innerWidth * 0.95 + 'px' : this.companyDialog.width + 'px'
+        }
+    },
+    watch: {
+        'isMobile'(val) {
+            this.getTableHeight()
+        },
+        'searchCollapse'(val) {
+            // 当搜索折叠面板状态变化时，重新计算表格高度
+            this.$nextTick(() => {
+                this.getTableHeight()
+            })
+        }
+    },
     methods: {
+        /**
+         * 检测设备类型
+         */
+        checkDevice() {
+            this.isMobile = window.innerWidth <= 768
+        },
         hasPermission,
         /**
          * 查询单位数据列表
@@ -202,6 +313,14 @@ export default {
                     this.tableData = res.data.records
                     this.total = res.data.total
                     this.loading = false
+                    
+                    // 移动端下执行搜索后折叠搜索面板
+                    if (this.isMobile) {
+                        this.searchCollapse = []
+                        this.$nextTick(() => {
+                            this.getTableHeight()
+                        })
+                    }
                 }
             })
         },
@@ -333,19 +452,37 @@ export default {
          * 获取表格高度
          */
         getTableHeight() {
-            let tableH = 210 //距离页面下方的高度
-            let tableHeight = window.innerHeight - tableH
-            if (tableHeight <= 300) {
-                this.tableHeight = 300
+            // 计算表格高度
+            let offset = 0;
+            
+            // 移动端下，考虑搜索折叠面板的状态
+            if (this.isMobile) {
+                // 搜索面板折叠时的偏移量较小
+                offset = this.searchCollapse.length > 0 ? 320 : 220;
+                
+                // 考虑底部固定按钮的空间
+                offset += 80;
             } else {
-                this.tableHeight = window.innerHeight - tableH
+                // 桌面端的偏移量，增加偏移量以减小表格高度，避免滚动条
+                offset = 300;
             }
+            
+            // 计算表格高度
+            let tableHeight = window.innerHeight - offset;
+            
+            // 设置最小高度，同时设置最大高度以避免滚动条
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 350);
         }
         
     },
     mounted() {
         /**
-         * 挂载window.onresize事件(动态设置table高度)
+         * 初始检测设备类型
+         */
+        this.checkDevice()
+        
+        /**
+         * 挂载window.onresize事件(动态设置table高度和检测设备类型)
          */
         let _this = this
         window.onresize = () => {
@@ -354,6 +491,7 @@ export default {
             }
             _this.resizeFlag = setTimeout(() => {
                 _this.getTableHeight()
+                _this.checkDevice()
                 _this.resizeFlag = null
             }, 100)
         }
@@ -366,17 +504,182 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 表格样式优化 */
+::v-deep .el-table {
+    font-size: 14px;
+    
+    .cell {
+        padding: 8px 5px;
+    }
+    
+    &.el-table--mobile {
+        .el-table__body td {
+            padding: 5px 0;
+        }
+        
+        .el-button.is-circle {
+            padding: 7px;
+        }
+    }
+}
+
+/* 分页组件样式 */
+::v-deep .el-pagination {
+    white-space: normal;
+    padding: 5px 0;
+    
+    &.is-background .btn-next,
+    &.is-background .btn-prev,
+    &.is-background .el-pager li {
+        margin: 0 3px;
+    }
+    
+    .el-pagination__total {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+}
+
+/* 搜索容器样式 */
+.search-container {
+    position: relative;
+    margin-bottom: 15px;
+    
+    &.is-mobile {
+        margin-bottom: 20px;
+    }
+}
+
+/* 移动端搜索折叠面板样式 */
+.mobile-search-collapse {
+    margin-bottom: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    
+    ::v-deep .el-collapse-item__header {
+        padding: 0 15px;
+        font-size: 14px;
+        
+        .collapse-summary {
+            margin-left: 10px;
+            font-size: 12px;
+            color: #909399;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    
+    ::v-deep .el-collapse-item__content {
+        padding: 10px;
+    }
+}
+
+/* 移动端搜索表单样式 */
+.mobile-search-form {
+    .el-form-item {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+        
+        .el-input {
+            width: 100%;
+        }
+    }
+    
+    .mobile-button-group {
+        display: flex;
+        justify-content: space-between;
+        
+        .el-button {
+            flex: 1;
+            margin: 0 5px;
+            
+            &:first-child {
+                margin-left: 0;
+            }
+            
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+/* 移动端新增按钮样式 */
+.mobile-add-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 公司表单样式 */
+.company-form {
+    padding: 0 10px;
+}
+
+/* 移动端公司表单样式 */
+.mobile-company-form {
+    ::v-deep .el-form-item {
+        margin-bottom: 15px;
+        
+        .el-form-item__label {
+            padding-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .el-form-item__content {
+            line-height: 1.2;
+        }
+        
+        .el-input {
+            width: 100%;
+        }
+    }
+}
+
+/* 上传容器样式 */
+.upload-container {
+    display: flex;
+    align-items: center;
+    
+    &.mobile-upload-container {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        .upload-tip {
+            margin-top: 10px;
+            color: #909399;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    }
+}
+
 .avatar-uploader {
     color: #8c939d;
     width: 100px;
     height: 100px;
     line-height: 100px;
     text-align: center;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    overflow: hidden;
+    
+    &:hover {
+        border-color: #409EFF;
+    }
 }
 
 .el-upload {
     width: 100px;
     height: 100px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
 .avatar-uploader-icon {
