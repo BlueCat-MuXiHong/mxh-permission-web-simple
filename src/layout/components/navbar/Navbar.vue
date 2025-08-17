@@ -34,59 +34,65 @@
             <div slot="content">
                 <el-form
                     ref="userForm"
-                    :inline="true"
                     :model="user"
                     :rules="rules"
                     label-width="80px"
                     size="small"
+                    class="user-form"
                 >
-                    <Flex justify="between" wrap="wrap">
-                        <el-form-item label="所属部门">
-                            <el-input v-model="user.departmentName" disabled></el-input>
-                        </el-form-item>
-                        <el-form-item label="所属单位">
-                            <el-input v-model="user.companyName" disabled></el-input>
-                        </el-form-item>
-                        <el-form-item label="用户名">
-                            <el-input v-model="user.username" disabled></el-input>
-                        </el-form-item>
-                        <el-form-item label="姓名" prop="realName">
-                            <el-input v-model="user.realName"></el-input>
-                        </el-form-item>
-                        <el-form-item label="电话" prop="phone">
-                            <el-input v-model="user.phone"></el-input>
-                        </el-form-item>
-                        <el-form-item label="昵称">
-                            <el-input v-model="user.nickName"></el-input>
-                        </el-form-item>
-                        <el-form-item label="邮箱">
-                            <el-input v-model="user.email"></el-input>
-                        </el-form-item>
-                        <el-form-item label="微信号">
-                            <el-input v-model="user.wechatNumber"></el-input>
-                        </el-form-item>
-                        <el-form-item label="性别" prop="gender">
-                            <el-radio-group v-model="user.gender" v-remove-aria-hidden>
-                                <el-radio :label="0">男</el-radio>
-                                <el-radio :label="1">女</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                    </Flex>
-                    <!-- 用户头像：待补充 -->
-                    <el-form-item label="用户头像">
-                        <el-upload
-                            :action="uploadUrl"
-                            :before-upload="beforeAvatarUpload"
-                            :data="uploadHeader"
-                            :on-success="handleAvatarSuccess"
-                            :show-file-list="false"
-                            border
-                            class="avatar-uploader"
-                        >
-                            <img v-if="user.avatar" :src="user.avatar" alt="" style="width: 100px;height: 100px">
-                            <i v-else class="el-icon-plus avatar-uploader-icon"/>
-                        </el-upload>
-                    </el-form-item>
+                    <div class="form-content">
+                        <div class="form-left">
+                            <el-form-item label="所属部门">
+                                <el-input v-model="user.departmentName" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="所属单位">
+                                <el-input v-model="user.companyName" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="用户名">
+                                <el-input v-model="user.username" disabled></el-input>
+                            </el-form-item>
+                            <el-form-item label="姓名" prop="realName">
+                                <el-input v-model="user.realName"></el-input>
+                            </el-form-item>
+                            <el-form-item label="电话" prop="phone">
+                                <el-input v-model="user.phone"></el-input>
+                            </el-form-item>
+                        </div>
+                        <div class="form-right">
+                            <el-form-item label="昵称">
+                                <el-input v-model="user.nickName"></el-input>
+                            </el-form-item>
+                            <el-form-item label="邮箱">
+                                <el-input v-model="user.email"></el-input>
+                            </el-form-item>
+                            <el-form-item label="微信号">
+                                <el-input v-model="user.wechatNumber"></el-input>
+                            </el-form-item>
+                            <el-form-item label="性别" prop="gender">
+                                <el-radio-group v-model="user.gender" v-remove-aria-hidden>
+                                    <el-radio :label="0">男</el-radio>
+                                    <el-radio :label="1">女</el-radio>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="用户头像">
+                                <div class="avatar-container">
+                                    <el-upload
+                                        :action="uploadUrl"
+                                        :before-upload="beforeAvatarUpload"
+                                        :data="uploadHeader"
+                                        :on-success="handleAvatarSuccess"
+                                        :show-file-list="false"
+                                        class="avatar-uploader"
+                                    >
+                                        <img v-if="user.avatar" :src="user.avatar" alt="用户头像" class="avatar-image">
+                                        <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                                    </el-upload>
+                                    <div class="avatar-tip">点击上传头像<br></div>
+                                </div>
+                            </el-form-item>
+                        </div>
+                    </div>
+                
                 </el-form>
             </div>
         </system-dialog>
@@ -103,23 +109,23 @@
             <!--   作用域插槽   -->
             <div slot="content">
                 <el-form ref="rulesPasswordRef"
-                         :inline="true"
                          :model="password"
                          :rules="rulesPasswordRules"
-                         class="courierPersonDialog"
-                         label-width="auto"
-                         style="margin-top: 20px"
+                         class="password-form"
+                         label-width="90px"
                 >
-                    
                     <flex align="center" direction="column" justify="center">
                         <el-form-item label="初始密码" prop="oldPassword">
-                            <el-input v-model="password.oldPassword" style="width: 300px" type="password"></el-input>
+                            <el-input v-model="password.oldPassword" placeholder="请输入初始密码" style="width: 320px"
+                                      type="password"></el-input>
                         </el-form-item>
                         <el-form-item label="新密码" prop="newPassword">
-                            <el-input v-model="password.newPassword" style="width: 300px" type="password"></el-input>
+                            <el-input v-model="password.newPassword" placeholder="请输入新密码" style="width: 320px"
+                                      type="password"></el-input>
                         </el-form-item>
                         <el-form-item label="确认密码" prop="checkPassword">
-                            <el-input v-model="password.checkPassword" style="width: 300px" type="password"></el-input>
+                            <el-input v-model="password.checkPassword" placeholder="请再次输入新密码" style="width: 320px"
+                                      type="password"></el-input>
                         </el-form-item>
                     </flex>
                 
@@ -205,7 +211,7 @@ export default {
             rePasswordDialog: {
                 title: '修改密码',
                 width: 500,
-                height: 250,
+                height: 280,
                 visible: false
             },
             password: {
@@ -215,8 +221,8 @@ export default {
             },
             userDialog: {
                 title: '个人中心',
-                width: 600,
-                height: 400,
+                width: 700,
+                height: 430,
                 visible: false
             },
             user: {
@@ -462,5 +468,102 @@ export default {
             }
         }
     }
+}
+
+/* 个人中心表单样式 */
+.user-form {
+    padding: 20px 15px;
+}
+
+.form-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-left, .form-right {
+    width: 48%;
+}
+
+.form-left .el-form-item, .form-right .el-form-item {
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+.avatar-container {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.avatar-uploader {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+    width: 100px;
+    height: 100px;
+    
+    &:hover {
+        border-color: #409EFF;
+    }
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 100%;
+    height: 100%;
+    line-height: 100px;
+    text-align: center;
+}
+
+.avatar-tip {
+    margin-left: 20px;
+    font-size: 12px;
+    color: #909399;
+    line-height: 1.8;
+}
+
+::v-deep .el-form-item__label {
+    line-height: 36px;
+    padding-right: 15px;
+    font-weight: 500;
+}
+
+::v-deep .el-input__inner {
+    height: 36px;
+    line-height: 36px;
+    padding: 0 12px;
+}
+
+::v-deep .el-radio {
+    margin-right: 20px;
+    line-height: 36px;
+    padding: 0 5px;
+}
+
+::v-deep .el-form-item.is-required .el-form-item__label:before {
+    margin-right: 6px;
+}
+
+/* 修改密码表单样式 */
+.password-form {
+    padding: 25px 15px 10px;
+}
+
+.password-form .el-form-item {
+    margin-bottom: 25px;
+}
+
+.password-form ::v-deep .el-input__inner {
+    padding-left: 15px;
 }
 </style>

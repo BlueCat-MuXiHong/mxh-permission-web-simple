@@ -12,6 +12,8 @@ import './icons'
 //路由首位
 import '@/permission'
 import resetForm from '@/utils/resetForm'
+// 引入拖拽指令
+import '@/components/Dialog/js/dialogDrag.js'
 
 Vue.prototype.$resetForm = resetForm
 
