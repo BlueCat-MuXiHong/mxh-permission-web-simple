@@ -85,7 +85,8 @@
             </el-table-column>
             <el-table-column align="center" label="单位名称" prop="companyName"></el-table-column>
             <el-table-column align="center" label="单位电话" prop="phone"></el-table-column>
-            <el-table-column :min-width="isMobile ? 150 : 'auto'" :show-overflow-tooltip="true" align="center" label="单位地址"
+            <el-table-column :min-width="isMobile ? 150 : 'auto'" :show-overflow-tooltip="true" align="center"
+                             label="单位地址"
                              prop="address"></el-table-column>
             <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="单位图标" prop="address">
                 <template v-slot="scope">
@@ -220,10 +221,6 @@
                                     </span>
                                 </span>
                             </el-upload>
-                            <div v-if="isMobile" class="upload-tip">
-                                <p>图片尺寸不小于100*100</p>
-                                <p>大小不超过2M</p>
-                            </div>
                         </div>
                     </el-form-item>
                 </el-form>
@@ -458,10 +455,10 @@ export default {
             // 移动端下，考虑搜索折叠面板的状态
             if (this.isMobile) {
                 // 搜索面板折叠时的偏移量较小
-                offset = this.searchCollapse.length > 0 ? 320 : 220;
+                offset = this.searchCollapse.length > 0 ? 370 : 180;
                 
                 // 考虑底部固定按钮的空间
-                offset += 80;
+                offset += 80; // 增加固定分页组件的高度
             } else {
                 // 桌面端的偏移量，增加偏移量以减小表格高度，避免滚动条
                 offset = 300;
@@ -471,7 +468,7 @@ export default {
             let tableHeight = window.innerHeight - offset;
             
             // 设置最小高度，同时设置最大高度以避免滚动条
-            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 350);
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 250);
         }
         
     },
@@ -538,6 +535,17 @@ export default {
         display: inline-block;
         margin-bottom: 5px;
     }
+}
+
+/* 固定分页组件样式 */
+.fixed-pagination {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 15px;
+    background: white;
+    z-index: 100;
 }
 
 /* 搜索容器样式 */
