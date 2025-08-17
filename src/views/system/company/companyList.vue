@@ -6,13 +6,12 @@
             <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
                 <el-collapse-item name="1">
                     <template slot="title">
-                        <i class="el-icon-search"></i> 搜索条件
+                        搜索条件
                         <span v-if="searchModel.companyName || searchModel.phone" class="collapse-summary">
                             <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
-                            <template
-                                v-if="searchModel.phone">{{
-                                    searchModel.companyName ? ' / ' : ''
-                                }}电话: {{ searchModel.phone }}</template>
+                            <template v-if="searchModel.phone">
+                                {{ searchModel.companyName ? ' / ' : '' }}电话: {{ searchModel.phone }}
+                            </template>
                         </span>
                     </template>
                     <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
@@ -59,7 +58,7 @@
                                @click="resetValue">
                         重置
                     </el-button>
-                    <el-button v-if="hasPermission('sys:company:add') && !isMobile"
+                    <el-button v-if="hasPermission('sys:company:add')"
                                icon="el-icon-plus"
                                size="small"
                                type="success"
@@ -105,7 +104,6 @@
             <el-table-column v-if="!isMobile" align="center" label="创建时间" prop="createTime"></el-table-column>
             <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <template v-slot="scope">
-                    <!-- 桌面端显示按钮 -->
                     <template v-if="!isMobile">
                         <el-button
                             v-if="hasPermission('sys:company:edit')"
@@ -125,8 +123,7 @@
                         </el-button>
                     </template>
                     
-                    <!-- 移动端显示下拉菜单 -->
-                    <el-dropdown v-if="isMobile" trigger="click">
+                    <el-dropdown v-else trigger="click">
                         <el-button size="mini" type="primary">
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
                         </el-button>
@@ -203,7 +200,6 @@
                                 :data="uploadHeader"
                                 :on-success="handleAvatarSuccess"
                                 :show-file-list="false"
-                                border
                                 class="avatar-uploader"
                             >
                                 <img
@@ -211,15 +207,6 @@
                                     class="el-upload-list__item-thumbnail" style="width: 100px;height: 100px"
                                 >
                                 <i v-else class="el-icon-plus avatar-uploader-icon"/>
-                                <span class="el-upload-list__item-actions">
-                                    <span
-                                        v-if="company.logo===''"
-                                        class="el-upload-list__item-delete"
-                                        @click="handleRemove(company.logo)"
-                                    >
-                                        <i class="el-icon-delete"></i>
-                                    </span>
-                                </span>
                             </el-upload>
                         </div>
                     </el-form-item>
@@ -244,7 +231,7 @@ export default {
             loading: true,
             searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
             searchModel: { //查询条件
-                pageNo: 1,//
+                pageNo: 1,
                 pageSize: 20,
                 companyName: '',
                 phone: ''
@@ -271,7 +258,8 @@ export default {
             total: 0,//总条数,
             //上传需要携带的数据
             uploadHeader: {'token': getToken()},
-            uploadUrl: process.env.VUE_APP_BASE_API + '/file/upload'
+            uploadUrl: process.env.VUE_APP_BASE_API + '/file/upload',
+            resizeFlag: null // 用于防抖resize事件
         }
     },
     computed: {
@@ -279,14 +267,14 @@ export default {
          * 动态计算对话框宽度
          */
         dialogWidth() {
-            return this.isMobile ? window.innerWidth * 0.95 + 'px' : this.companyDialog.width + 'px'
+            return this.isMobile ? window.innerWidth * 0.95 : this.companyDialog.width
         }
     },
     watch: {
-        'isMobile'(val) {
+        'isMobile'() {
             this.getTableHeight()
         },
-        'searchCollapse'(val) {
+        'searchCollapse'() {
             // 当搜索折叠面板状态变化时，重新计算表格高度
             this.$nextTick(() => {
                 this.getTableHeight()
@@ -441,9 +429,9 @@ export default {
         },
         /**
          * 移除图片
-         * @param file
          */
-        handleRemove(file) {
+        handleRemove() {
+            this.company.logo = ''
         },
         /**
          * 获取表格高度
@@ -535,17 +523,6 @@ export default {
         display: inline-block;
         margin-bottom: 5px;
     }
-}
-
-/* 固定分页组件样式 */
-.fixed-pagination {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 10px 15px;
-    background: white;
-    z-index: 100;
 }
 
 /* 搜索容器样式 */
