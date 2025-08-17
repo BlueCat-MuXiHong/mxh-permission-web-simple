@@ -104,25 +104,29 @@
             <el-table-column v-if="!isMobile" align="center" label="创建时间" prop="createTime"></el-table-column>
             <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <template v-slot="scope">
+                    <!-- 桌面端显示按钮 -->
                     <template v-if="!isMobile">
-                        <el-button
-                            v-if="hasPermission('sys:company:edit')"
-                            icon="el-icon-edit-outline"
-                            size="mini"
-                            type="primary"
-                            @click="handleEdit(scope.row)"
-                        >编辑
-                        </el-button>
-                        <el-button
-                            v-if="hasPermission('sys:company:delete')"
-                            icon="el-icon-delete-solid"
-                            size="mini"
-                            type="danger"
-                            @click="handleDelete(scope.row)"
-                        >删除
-                        </el-button>
+                        <div class="operation-buttons">
+                            <el-button
+                                v-if="hasPermission('sys:company:edit')"
+                                icon="el-icon-edit-outline"
+                                size="mini"
+                                type="primary"
+                                @click="handleEdit(scope.row)"
+                            >编辑
+                            </el-button>
+                            <el-button
+                                v-if="hasPermission('sys:company:delete')"
+                                icon="el-icon-delete-solid"
+                                size="mini"
+                                type="danger"
+                                @click="handleDelete(scope.row)"
+                            >删除
+                            </el-button>
+                        </div>
                     </template>
                     
+                    <!-- 移动端显示下拉菜单 -->
                     <el-dropdown v-else trigger="click">
                         <el-button size="mini" type="primary">
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
@@ -508,6 +512,26 @@ export default {
     }
 }
 
+/* 操作按钮样式优化 */
+.operation-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    
+    .el-button {
+        margin: 0 2px;
+        padding: 5px 8px;
+        
+        &:first-child {
+            margin-left: 0;
+        }
+        
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
 /* 分页组件样式 */
 ::v-deep .el-pagination {
     white-space: normal;
@@ -522,6 +546,18 @@ export default {
     .el-pagination__total {
         display: inline-block;
         margin-bottom: 5px;
+    }
+}
+
+/* 响应式优化 - 针对中等屏幕 */
+@media screen and (max-width: 1200px) {
+    .operation-buttons {
+        flex-direction: column;
+        
+        .el-button {
+            margin: 2px 0;
+            width: 100%;
+        }
     }
 }
 
