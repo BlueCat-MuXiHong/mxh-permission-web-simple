@@ -1,5 +1,5 @@
 <template>
-    <div align="center" class="navbar" justify="between">
+    <div align="center" class="navbar">
         <!--折叠菜单-->
         <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar"/>
         <!--面包屑-->
@@ -396,6 +396,8 @@ export default {
     }
     
     .right-menu {
+        position: absolute;
+        right: 10px;
         display: flex;
         align-items: center;
         height: 100%;
