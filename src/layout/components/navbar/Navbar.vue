@@ -137,6 +137,7 @@ import Breadcrumb from "@/layout/components/navbar/Breadcrumb.vue"
 import Flex from "@/components/Flex/Flex.vue";
 import SystemDialog from "@/components/Dialog/SystemDialog.vue";
 import {getToken} from "@/utils/auth";
+import {getUserId, resetPassword, updateUser} from "@/api/user";
 
 export default {
     components: {

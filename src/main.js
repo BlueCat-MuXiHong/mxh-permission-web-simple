@@ -11,8 +11,9 @@ import './assets/styles/index.scss'
 import './icons'
 //路由首位
 import '@/permission'
-// 引入拖拽指令
-import '@/components/Dialog/js/dialogDrag.js'
+import resetForm from '@/utils/resetForm'
+
+Vue.prototype.$resetForm = resetForm
 
 Vue.use(ElementUI)
 // 关闭Vue.js在生产环境下的启动提示信息
