@@ -3,7 +3,7 @@
         <div style="margin-bottom: 10px;">
             <!--  新增按钮  -->
             <el-button
-                v-if="hasPermission('sys:user:add')"
+                v-if="hasPermission('sys:menu:add')"
                 icon="el-icon-plus"
                 size="small"
                 type="success"
@@ -41,8 +41,9 @@
                 prop="icon">
                 <template slot-scope="scope">
                     <!--     如果包含el-开头的用i标签，否则用svg-icon     -->
-                    <i v-if="scope.row.icon.includes('el-icon')" :class="scope.row.icon"/>
-                    <svg-icon v-else :icon-class="scope.row.icon"/>
+                    <i v-if="scope.row.icon && scope.row.icon.includes('el-icon')" :class="scope.row.icon"/>
+                    <svg-icon v-else-if="scope.row.icon" :icon-class="scope.row.icon"/>
+                    <span v-else>-</span>
                 </template>
             </el-table-column>
             <el-table-column
