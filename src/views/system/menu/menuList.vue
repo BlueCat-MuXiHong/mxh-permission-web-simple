@@ -1,19 +1,30 @@
 <template>
     <el-main>
-        <!--  新增按钮  -->
-        <el-button v-if="hasPermission('sys:user:add')" icon="el-icon-plus" size="small" type="success"
-                   @click="openAddWindow()">新增
-        </el-button>
+        <div style="margin-bottom: 10px;">
+            <!--  新增按钮  -->
+            <el-button
+                v-if="hasPermission('sys:user:add')"
+                icon="el-icon-plus"
+                size="small"
+                type="success"
+                @click="openAddWindow()">
+                新增
+            </el-button>
+        </div>
+        
         <!--  表格数据  -->
         <el-table
             v-loading="loading"
             :data="tableData"
             :height="tableHeight"
             :tree-props="{children: 'children'}"
+            :class="{'el-table--mobile': isMobile}"
+            :header-cell-style="isMobile ? {padding: '5px 0'} : {}"
+            :size="isMobile ? 'mini' : 'medium'"
             border
             default-expand-all
             row-key="id"
-            style="width: 100%;margin-top: 10px;"
+            style="width: 100%;"
         >
             <el-table-column label="菜单名称" prop="label"></el-table-column>
             <el-table-column align="center" label="菜单类型" prop="type">
@@ -23,34 +34,76 @@
                     <el-tag v-else-if="scope.row.type===2" size="normal" type="warning">按钮</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="菜单图标" prop="icon">
+            <el-table-column
+                :width="isMobile ? 80 : 'auto'"
+                align="center"
+                label="菜单图标"
+                prop="icon">
                 <template slot-scope="scope">
                     <!--     如果包含el-开头的用i标签，否则用svg-icon     -->
                     <i v-if="scope.row.icon.includes('el-icon')" :class="scope.row.icon"/>
                     <svg-icon v-else :icon-class="scope.row.icon"/>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="路由编码" prop="code"></el-table-column>
-            <el-table-column align="center" label="路由地址" prop="path"></el-table-column>
-            <el-table-column align="center" label="组件路径" prop="url"></el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column
+                v-if="!isMobile"
+                align="center"
+                label="路由编码"
+                prop="code"></el-table-column>
+            <el-table-column
+                v-if="!isMobile"
+                align="center"
+                label="路由地址"
+                prop="path"></el-table-column>
+            <el-table-column
+                v-if="!isMobile"
+                align="center"
+                label="组件路径"
+                prop="url"></el-table-column>
+            <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <template slot-scope="scope">
-                    <el-button
-                        v-if="hasPermission('sys:menu:edit')"
-                        icon="el-icon-edit-outline"
-                        size="mini"
-                        type="primary"
-                        @click="handleEdit(scope.row)"
-                    >编辑
-                    </el-button>
-                    <el-button
-                        v-if="hasPermission('sys:menu:delete')"
-                        icon="el-icon-delete-solid"
-                        size="mini"
-                        type="danger"
-                        @click="handleDelete(scope.row)"
-                    >删除
-                    </el-button>
+                    <!-- 桌面端显示按钮 -->
+                    <template v-if="!isMobile">
+                        <div class="operation-buttons">
+                            <el-button
+                                v-if="hasPermission('sys:menu:edit')"
+                                icon="el-icon-edit-outline"
+                                size="mini"
+                                type="primary"
+                                @click="handleEdit(scope.row)"
+                            >编辑
+                            </el-button>
+                            <el-button
+                                v-if="hasPermission('sys:menu:delete')"
+                                icon="el-icon-delete-solid"
+                                size="mini"
+                                type="danger"
+                                @click="handleDelete(scope.row)"
+                            >删除
+                            </el-button>
+                        </div>
+                    </template>
+                    
+                    <!-- 移动端显示下拉菜单 -->
+                    <el-dropdown v-else trigger="click">
+                        <el-button size="mini" type="primary">
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:menu:edit')"
+                                @click.native="handleEdit(scope.row)"
+                            >
+                                <i class="el-icon-edit-outline"></i> 编辑
+                            </el-dropdown-item>
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:menu:delete')"
+                                @click.native="handleDelete(scope.row)"
+                            >
+                                <i class="el-icon-delete-solid"></i> 删除
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
                 </template>
             </el-table-column>
         </el-table>
@@ -58,18 +111,22 @@
         <!--  新增或修改窗口  -->
         <system-dialog
             v-dialog-drag
-            :height="menuDialog.height"
+            :height="dialogHeight"
             :title="menuDialog.title"
             :visible="menuDialog.visible"
-            :width="menuDialog.width"
+            :width="dialogWidth"
             @onClose="onClose"
             @onConfirm="onConfirm"
         >
             <div slot="content">
-                <el-form ref="menuForm" :inline="true"
+                <el-form ref="menuForm"
+                         :class="{'mobile-menu-form': isMobile}"
                          :model="menu"
                          :rules="rules"
-                         label-width="80px" size="small"
+                         :inline="false"
+                         :label-position="isMobile ? 'top' : 'right'"
+                         :label-width="isMobile ? '70px' : '80px'"
+                         size="small"
                 >
                     <el-col :span="24">
                         <el-form-item label="菜单类型" prop="type">
@@ -111,7 +168,7 @@
             :height="parentDialog.height"
             :title="parentDialog.title"
             :visible="parentDialog.visible"
-            :width="parentDialog.width"
+            :width="dialogWidth"
             @onClose="onParentClose"
             @onConfirm="onParentConfirm"
         >
@@ -149,6 +206,7 @@ export default {
     components: {MyIcon, SystemDialog},
     data() {
         return {
+            isMobile: false, // 添加移动端检测标识
             tableHeight: 0,
             tableData: [],
             loading: false,
@@ -192,11 +250,37 @@ export default {
                 path: [{required: true, trigger: 'blur', message: '请输入路由路径'}],
                 url: [{required: true, trigger: 'blur', message: '请输入组件路径'}],
                 code: [{required: true, trigger: 'blur', message: '请输入权限编码'}]
-            }
+            },
+            resizeFlag: null // 用于防抖resize事件
+        }
+    },
+    computed: {
+        /**
+         * 动态计算对话框宽度
+         */
+        dialogWidth() {
+            return this.isMobile ? window.innerWidth * 0.95 : this.menuDialog.width
+        },
+        /**
+         * 动态计算对话框高度
+         */
+        dialogHeight() {
+            return this.isMobile ? 550 : this.menuDialog.height
+        }
+    },
+    watch: {
+        'isMobile'() {
+            this.getTableHeight()
         }
     },
     methods: {
         hasPermission,
+        /**
+         * 检测设备类型
+         */
+        checkDevice() {
+            this.isMobile = window.innerWidth <= 768
+        },
         search() {
             this.loading = true
             getPermissionList().then(res => {
@@ -343,13 +427,31 @@ export default {
          * 获取表格高度
          */
         getTableHeight() {
-            let tableH = 150 //距离页面下方的高度
-            this.tableHeight = window.innerHeight - tableH
+            let offset = 0;
+            
+            // 移动端下，考虑偏移量
+            if (this.isMobile) {
+                offset = 200; // 减小移动端的偏移量，使表格更贴近底部
+            } else {
+                // 桌面端的偏移量
+                offset = 120; // 减小桌面端的偏移量
+            }
+            
+            // 计算表格高度
+            let tableHeight = window.innerHeight - offset;
+            
+            // 设置最小高度，同时设置最大高度以避免滚动条
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 200);
         }
     },
     mounted() {
         /**
-         * 挂载window.onresize事件(动态设置table高度)
+         * 初始检测设备类型
+         */
+        this.checkDevice()
+        
+        /**
+         * 挂载window.onresize事件(动态设置table高度和检测设备类型)
          */
         let _this = this
         window.onresize = () => {
@@ -358,6 +460,7 @@ export default {
             }
             _this.resizeFlag = setTimeout(() => {
                 _this.getTableHeight()
+                _this.checkDevice()
                 _this.resizeFlag = null
             }, 100)
         }
@@ -370,5 +473,94 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 表格样式优化 */
+::v-deep .el-table {
+    &.el-table--mobile {
+        .el-table__body td {
+            padding: 5px 0;
+        }
+        
+        .el-button.is-circle {
+            padding: 7px;
+        }
+    }
+}
 
+/* 操作按钮样式优化 */
+.operation-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    
+    .el-button {
+        margin: 0 2px;
+        padding: 5px 8px;
+        
+        &:first-child {
+            margin-left: 0;
+        }
+        
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+/* 分页组件样式 */
+::v-deep .el-pagination {
+    white-space: normal;
+    padding: 5px 0;
+    
+    &.is-background .btn-next,
+    &.is-background .btn-prev,
+    &.is-background .el-pager li {
+        margin: 0 3px;
+    }
+    
+    .el-pagination__total {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+}
+
+/* 响应式优化 - 针对中等屏幕 */
+@media screen and (max-width: 1200px) {
+    .operation-buttons {
+        flex-direction: column;
+        
+        .el-button {
+            margin: 2px 0;
+            width: 100%;
+        }
+    }
+}
+
+/* 移动端新增按钮样式 */
+.mobile-add-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 移动端菜单表单样式 */
+.mobile-menu-form {
+    ::v-deep .el-form-item {
+        margin-bottom: 15px;
+        
+        .el-form-item__label {
+            padding-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .el-form-item__content {
+            line-height: 1.2;
+        }
+        
+        .el-input {
+            width: 100%;
+        }
+    }
+}
 </style>
