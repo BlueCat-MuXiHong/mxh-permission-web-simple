@@ -1,26 +1,69 @@
 <template>
     <el-main>
         <!--  条件查询区域  -->
-        <!--  :input 行内表单 ，label-width 表单标签的宽度 ，size 表单大小  -->
-        <el-form :inline="true" label-width="80px" size="small">
-            <el-form-item>
-                <el-input v-model="searchModel.companyName" placeholder="请输入单位名称"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-input v-model="searchModel.departmentName" placeholder="请输入部门名称"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-search" type="primary"
-                           @click="search">查询
-                </el-button>
-                <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-refresh-right"
-                           @click="resetValue">重置
-                </el-button>
-                <el-button v-if="hasPermission('sys:department:add')" icon="el-icon-plus" type="success"
-                           @click="openAddWindow">新增
-                </el-button>
-            </el-form-item>
-        </el-form>
+        <div :class="{'is-mobile': isMobile}" class="search-container">
+            <!-- 移动端折叠面板 -->
+            <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
+                <el-collapse-item name="1">
+                    <template slot="title">
+                        搜索条件
+                        <span v-if="searchModel.companyName || searchModel.departmentName" class="collapse-summary">
+                            <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
+                            <template v-if="searchModel.departmentName">
+                                {{ searchModel.companyName ? ' / ' : '' }}部门名称: {{ searchModel.departmentName }}
+                            </template>
+                        </span>
+                    </template>
+                    <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
+                             size="small">
+                        <el-form-item label="单位名称">
+                            <el-input v-model="searchModel.companyName" clearable
+                                      placeholder="请输入单位名称"></el-input>
+                        </el-form-item>
+                        <el-form-item label="部门名称">
+                            <el-input v-model="searchModel.departmentName" clearable
+                                      placeholder="请输入部门名称"></el-input>
+                        </el-form-item>
+                        <el-form-item class="mobile-button-group">
+                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-refresh-right"
+                                       size="small" @click="resetValue">
+                                重置
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:department:add')"
+                                       icon="el-icon-plus"
+                                       size="small"
+                                       type="success"
+                                       @click="openAddWindow">新增
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-collapse-item>
+            </el-collapse>
+            
+            <!-- 桌面端常规表单 -->
+            <el-form v-else ref="searchForm" :inline="true" label-width="80px" size="small">
+                <el-form-item>
+                    <el-input v-model="searchModel.companyName" placeholder="请输入单位名称"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-input v-model="searchModel.departmentName" placeholder="请输入部门名称"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-search" type="primary"
+                               @click="search">查询
+                    </el-button>
+                    <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-refresh-right"
+                               @click="resetValue">重置
+                    </el-button>
+                    <el-button v-if="hasPermission('sys:department:add')" icon="el-icon-plus" type="success"
+                               @click="openAddWindow">新增
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </div>
         <!--  表格区域  -->
         <!--
           :data 表格数据,:height 表格高度,stripe 斑马纹表格,style 表格样式,border 表格边框,
@@ -37,68 +80,106 @@
             default-expand-all
             row-key="id"
             stripe
-            style="width: 100%;"
+            :class="{'el-table--mobile': isMobile}"
+            :header-cell-style="isMobile ? {padding: '5px 0'} : {}"
+            :size="isMobile ? 'mini' : 'medium'"
+            style="width: 100%; margin-bottom: 10px"
         >
             >
             <!--   prop 填写数据的属性名称   -->
-            <el-table-column label="部门名称" prop="departmentName"></el-table-column>
-            <el-table-column align="center" label="所属部门" prop="parentName"></el-table-column>
-            <el-table-column align="center" label="所属单位" prop="companyName"></el-table-column>
-            <el-table-column align="center" label="部门电话" prop="phone"></el-table-column>
-            <el-table-column align="center" label="部门邮箱" prop="email"></el-table-column>
-            <el-table-column align="center" label="部门地址" prop="address"></el-table-column>
-            <el-table-column align="center" label="操作">
-                <template v-slot="scope">
-                    <el-button
-                        v-if="hasPermission('sys:department:edit')"
-                        :disabled="scope.row.pid===0"
-                        icon="el-icon-edit-outline"
-                        size="mini"
-                        type="primary" @click="handleEdit(scope.row)"
-                    >编辑
-                    </el-button>
-                    <el-button
-                        v-if="hasPermission('sys:department:delete')"
-                        :disabled="scope.row.pid===0"
-                        icon="el-icon-delete-solid"
-                        size="mini"
-                        type="danger" @click="handleDelete(scope.row)"
-                    >删除
-                    </el-button>
+            <el-table-column :min-width="isMobile ? 120 : 'auto'" label="部门名称"
+                             prop="departmentName"></el-table-column>
+            <el-table-column :min-width="isMobile ? 100 : 'auto'" align="center" label="所属部门"
+                             prop="parentName"></el-table-column>
+            <el-table-column :min-width="isMobile ? 100 : 'auto'" align="center" label="所属单位"
+                             prop="companyName"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="部门电话" prop="phone"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="部门邮箱" prop="email"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="部门地址" prop="address"></el-table-column>
+            <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
+                <!-- 桌面端显示按钮 -->
+                <template v-if="!isMobile" v-slot="scope">
+                    <div class="operation-buttons">
+                        <el-button
+                            v-if="hasPermission('sys:department:edit')"
+                            :disabled="scope.row.pid===0"
+                            icon="el-icon-edit-outline"
+                            size="mini"
+                            type="primary" @click="handleEdit(scope.row)"
+                        >编辑
+                        </el-button>
+                        <el-button
+                            v-if="hasPermission('sys:department:delete')"
+                            :disabled="scope.row.pid===0"
+                            icon="el-icon-delete-solid"
+                            size="mini"
+                            type="danger" @click="handleDelete(scope.row)"
+                        >删除
+                        </el-button>
+                    </div>
+                </template>
+                
+                <!-- 移动端显示下拉菜单 -->
+                <template v-else v-slot="scope">
+                    <el-dropdown trigger="click">
+                        <el-button size="mini" type="primary">
+                            操作<i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:department:edit')"
+                                :disabled="scope.row.pid===0"
+                                @click.native="handleEdit(scope.row)"
+                            >
+                                <i class="el-icon-edit-outline"></i> 编辑
+                            </el-dropdown-item>
+                            <el-dropdown-item
+                                v-if="hasPermission('sys:department:delete')"
+                                :disabled="scope.row.pid===0"
+                                @click.native="handleDelete(scope.row)"
+                            >
+                                <i class="el-icon-delete-solid"></i> 删除
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
                 </template>
             </el-table-column>
         </el-table>
         <!--  底部 分页区域  -->
         <!--  :current-page 当前页码,:page-size 每页显示的条数,
         :page-sizes 每页可选择显示的条数，background 分页按钮背景颜色,:layout 分页布局-->
-        <el-pagination
-            :current-page="searchModel.pageNo"
-            :page-size="searchModel.pageSize"
-            :page-sizes="[10, 20, 30, 40, 50]"
-            :total="total"
-            background
-            layout="total, sizes, prev, pager, next, jumper"
-            style="display: flex; justify-content: flex-end;"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-        >
-        </el-pagination>
+        <flex justify="end">
+            <el-pagination
+                :current-page="searchModel.pageNo"
+                :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+                :page-size="searchModel.pageSize"
+                :page-sizes="[10, 20, 30, 40, 50]"
+                :small="isMobile"
+                :total="total"
+                background
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+            >
+            </el-pagination>
+        </flex>
         <system-dialog
             v-dialog-drag
             :height="departmentDialog.height"
             :title="departmentDialog.title"
             :visible="departmentDialog.visible"
-            :width="departmentDialog.width"
+            :width="dialogWidth"
             @onClose="onClose"
             @onConfirm="onConfirm"
         >
             <div slot="content">
                 <el-form ref="departmentForm"
                          v-remove-aria-hidden
-                         :inline="true"
+                         :class="{'mobile-department-form': isMobile}"
                          :model="department"
                          :rules="rules"
-                         label-width="80px"
+                         :inline="false"
+                         :label-position="isMobile ? 'top' : 'right'"
+                         :label-width="isMobile ? '70px' : '80px'"
                          size="small"
                 >
                     <flex class="departDialogClass" justify="between" wrap="wrap">
@@ -154,6 +235,8 @@ export default {
     components: {flex, SystemDialog},
     data() {
         return {
+            isMobile: false,
+            searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
             loading: true,
             parentDialogLoading: false,
             tableHeight: 0,
@@ -186,10 +269,36 @@ export default {
             rules: {
                 parentName: [{required: true, message: '请选择所属部门', trigger: 'blur'}],
                 departmentName: [{required: true, message: '请输入部门名称', trigger: 'blur'}]
-            }
+            },
+            resizeFlag: null // 用于防抖resize事件
+        }
+    },
+    computed: {
+        /**
+         * 动态计算对话框宽度
+         */
+        dialogWidth() {
+            return this.isMobile ? window.innerWidth * 0.95 : this.departmentDialog.width
+        }
+    },
+    watch: {
+        'isMobile'() {
+            this.getTableHeight()
+        },
+        'searchCollapse'() {
+            // 当搜索折叠面板状态变化时，重新计算表格高度
+            this.$nextTick(() => {
+                this.getTableHeight()
+            })
         }
     },
     methods: {
+        /**
+         * 检测设备类型
+         */
+        checkDevice() {
+            this.isMobile = window.innerWidth <= 768
+        },
         hasPermission,
         /**
          * 部门级联选择器选择事件
@@ -213,6 +322,14 @@ export default {
                     this.tableData = res.data.records
                     this.total = res.data.total
                     this.loading = false
+                    
+                    // 移动端下执行搜索后折叠搜索面板
+                    if (this.isMobile) {
+                        this.searchCollapse = []
+                        this.$nextTick(() => {
+                            this.getTableHeight()
+                        })
+                    }
                 }
             })
         },
@@ -300,13 +417,26 @@ export default {
          * 获取表格高度
          */
         getTableHeight() {
-            let tableH = 210 //距离页面下方的高度
-            let tableHeight = window.innerHeight - tableH
-            if (tableHeight <= 300) {
-                this.tableHeight = 300
+            // 计算表格高度
+            let offset = 0;
+            
+            // 移动端下，考虑搜索折叠面板的状态
+            if (this.isMobile) {
+                // 搜索面板折叠时的偏移量较小
+                offset = this.searchCollapse.length > 0 ? 370 : 180;
+                
+                // 考虑底部固定按钮的空间
+                offset += 80; // 增加固定分页组件的高度
             } else {
-                this.tableHeight = window.innerHeight - tableH
+                // 桌面端的偏移量
+                offset = 210;
             }
+            
+            // 计算表格高度
+            let tableHeight = window.innerHeight - offset;
+            
+            // 设置最小高度，同时设置最大高度以避免滚动条
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 250);
         },
         /**
          * 关闭窗口
@@ -369,7 +499,7 @@ export default {
                     // 添加disabled属性
                     department.disabled = true
                 }
-                
+
                 // 如果当前部门有子部门，则递归调用此函数
                 if (department.children && department.children.length > 0) {
                     this.addDisabledToNode(targetId, department.children)
@@ -379,7 +509,12 @@ export default {
     },
     mounted() {
         /**
-         * 挂载window.onresize事件(动态设置table高度)
+         * 初始检测设备类型
+         */
+        this.checkDevice()
+        
+        /**
+         * 挂载window.onresize事件(动态设置table高度和检测设备类型)
          */
         let _this = this
         window.onresize = () => {
@@ -388,6 +523,7 @@ export default {
             }
             _this.resizeFlag = setTimeout(() => {
                 _this.getTableHeight()
+                _this.checkDevice()
                 _this.resizeFlag = null
             }, 100)
         }
@@ -419,5 +555,140 @@ export default {
 
 input[aria-hidden="true"] {
     display: none !important;
+}
+
+/* 搜索容器样式 */
+.search-container {
+    position: relative;
+    margin-bottom: 15px;
+    
+    &.is-mobile {
+        margin-bottom: 20px;
+    }
+}
+
+/* 移动端搜索折叠面板样式 */
+.mobile-search-collapse {
+    margin-bottom: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    
+    ::v-deep .el-collapse-item__header {
+        padding: 0 15px;
+        font-size: 14px;
+        
+        .collapse-summary {
+            margin-left: 10px;
+            font-size: 12px;
+            color: #909399;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    
+    ::v-deep .el-collapse-item__content {
+        padding: 10px;
+    }
+}
+
+/* 移动端搜索表单样式 */
+.mobile-search-form {
+    .el-form-item {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+        
+        .el-input {
+            width: 100%;
+        }
+    }
+    
+    .mobile-button-group {
+        display: flex;
+        justify-content: space-between;
+        
+        .el-button {
+            flex: 1;
+            margin: 0 5px;
+            
+            &:first-child {
+                margin-left: 0;
+            }
+            
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+/* 表格样式优化 */
+::v-deep .el-table {
+    font-size: 14px;
+    
+    .cell {
+        padding: 8px 5px;
+    }
+    
+    &.el-table--mobile {
+        .el-table__body td {
+            padding: 5px 0;
+        }
+        
+        .el-button.is-circle {
+            padding: 7px;
+        }
+    }
+}
+
+/* 操作按钮样式优化 */
+.operation-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    
+    .el-button {
+        margin: 0 2px;
+        padding: 5px 8px;
+        
+        &:first-child {
+            margin-left: 0;
+        }
+        
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+/* 响应式优化 - 针对中等屏幕 */
+@media screen and (max-width: 1200px) {
+    .operation-buttons {
+        flex-direction: column;
+        
+        .el-button {
+            margin: 2px 0;
+            width: 100%;
+        }
+    }
+}
+
+/* 分页组件样式 */
+::v-deep .el-pagination {
+    white-space: normal;
+    padding: 5px 0;
+    
+    &.is-background .btn-next,
+    &.is-background .btn-prev,
+    &.is-background .el-pager li {
+        margin: 0 3px;
+    }
+    
+    .el-pagination__total {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
 }
 </style>
