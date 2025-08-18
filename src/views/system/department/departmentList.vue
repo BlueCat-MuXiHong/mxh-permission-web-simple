@@ -192,9 +192,8 @@
                                 :props="{ checkStrictly: true, label: 'departmentName', value:'id',children:'children'}"
                                 :show-all-levels="false"
                                 clearable
-                                size="mini"
                                 style="width: 100%"
-                                @change="handleDepartCascadeChange()"
+                                @change="handleDepartCascadeChange"
                             />
                         </el-form-item>
                         <el-form-item label="所属单位">
@@ -228,17 +227,16 @@ import {
     updateDepartment
 } from '@/api/department'
 import SystemDialog from '@/components/Dialog/SystemDialog.vue'
-import flex from '@/components/Flex/Flex.vue'
+import Flex from '@/components/Flex/Flex.vue'
 import hasPermission from '@/router/permission'
 
 export default {
-    components: {flex, SystemDialog},
+    components: {Flex, SystemDialog},
     data() {
         return {
             isMobile: false,
             searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
             loading: true,
-            parentDialogLoading: false,
             tableHeight: 0,
             searchModel: {
                 companyName: '',
@@ -252,7 +250,7 @@ export default {
                 title: '',//窗口标题
                 visible: false,//是否显示
                 width: 600,//窗口宽度
-                height: 200//矿口高度
+                height: 350//窗口高度
             },
             departTree: [],//部门树
             cascaderData: [],
@@ -372,16 +370,27 @@ export default {
          * @param treeList
          */
         getParentListId(pid, treeList) {
+            this.cascaderData = []; // 清空之前的数据
+            this._getParentListId(pid, treeList);
+            //倒序
+            this.cascaderData.sort()
+        },
+        
+        /**
+         * 递归获取父级部门ID的内部方法
+         * @param pid
+         * @param treeList
+         * @private
+         */
+        _getParentListId(pid, treeList) {
             Array.isArray(treeList) && treeList.forEach(item => {
                 if (pid === item.id) {
                     this.cascaderData.push(item.id)
-                    this.getParentListId(item.pid, this.departTree)
+                    this._getParentListId(item.pid, this.departTree)
                 } else {
-                    this.getParentListId(pid, item.children)
+                    this._getParentListId(pid, item.children)
                 }
             })
-            //倒序
-            this.cascaderData.sort()
         },
         /**
          * 删除部门
@@ -404,14 +413,14 @@ export default {
          */
         handleSizeChange(size) {
             this.searchModel.pageSize = size
-            this.search(this.searchModel)
+            this.search()
         },
         /**
          * 分页改变
          */
         handleCurrentChange(pageNo) {
             this.searchModel.pageNo = pageNo
-            this.search(this.searchModel)
+            this.search()
         },
         /**
          * 获取表格高度
@@ -499,7 +508,7 @@ export default {
                     // 添加disabled属性
                     department.disabled = true
                 }
-
+                
                 // 如果当前部门有子部门，则递归调用此函数
                 if (department.children && department.children.length > 0) {
                     this.addDisabledToNode(targetId, department.children)
@@ -533,6 +542,13 @@ export default {
         this.search()
         this.getTableHeight()
         this.getDepartTreeData()
+    },
+    beforeDestroy() {
+        // 清理 resize 事件监听器
+        window.onresize = null;
+        if (this.resizeFlag) {
+            clearTimeout(this.resizeFlag);
+        }
     }
 }
 </script>
@@ -670,6 +686,37 @@ input[aria-hidden="true"] {
         
         .el-button {
             margin: 2px 0;
+            width: 100%;
+        }
+    }
+}
+
+/* 部门表单样式 */
+.departDialogClass {
+    //居中
+    display: flex;
+    justify-content: center;
+    
+    .el-form-item {
+        margin-top: 15px;
+    }
+}
+
+/* 移动端部门表单样式 */
+.mobile-department-form {
+    ::v-deep .el-form-item {
+        margin-bottom: 15px;
+        
+        .el-form-item__label {
+            padding-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .el-form-item__content {
+            line-height: 1.2;
+        }
+        
+        .el-input {
             width: 100%;
         }
     }
