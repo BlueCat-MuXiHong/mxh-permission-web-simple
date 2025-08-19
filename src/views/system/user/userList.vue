@@ -1,13 +1,43 @@
 <template>
     <el-container :style="{height:containerHeight+'px'}">
+        <!-- 移动端部门树折叠按钮 -->
+        <el-collapse v-if="isMobile" v-model="deptCollapse" class="mobile-dept-collapse">
+            <el-collapse-item name="1">
+                <template slot="title">
+                    <div class="collapse-title-container">
+                        <i class="el-icon-office-building dept-icon"></i>
+                        <span>部门列表</span>
+                        <el-tag v-if="searchModel.departmentId" size="mini" type="primary" class="dept-status-tag">
+                            <i class="el-icon-info"></i> 已选择部门
+                        </el-tag>
+                    </div>
+                    <div v-if="searchModel.departmentId" class="collapse-summary">
+                        当前选择: {{ departmentList.find(d => d.id === searchModel.departmentId)?.departmentName || '未知部门' }}
+                    </div>
+                </template>
+                <div class="dept-toggle-container">
+                    <el-button-group class="toggle-button-group">
+                        <el-button size="small" type="primary" plain @click="expandAll">
+                            <i class="el-icon-arrow-down"></i> 展开所有
+                        </el-button>
+                        <el-button size="small" type="info" plain @click="collapseAll">
+                            <i class="el-icon-arrow-up"></i> 收起所有
+                        </el-button>
+                    </el-button-group>
+                </div>
+            </el-collapse-item>
+        </el-collapse>
+        
         <!--  左侧部门树形菜单列表  -->
         <el-aside
+            v-show="!isMobile || showDeptTree"
+            :class="{'mobile-dept-tree': isMobile}"
             style="
           padding: 0 0 0 0;
           background: #fff;
           border-right: 1px solid #dfe6ec;
           "
-            width="250px"
+            :width="isMobile ? '100%' : '250px'"
         >
             <flex justify="around" style="margin-top: 10px">
                 <el-input
@@ -51,73 +81,161 @@
             </el-tree>
         </el-aside>
         <el-main>
-            <el-form
-                ref="searchForm"
-                :inline="true"
-                :model="searchModel"
-                label-width="80px"
-                size="small"
-            >
-                <el-form-item>
-                    <el-input v-model="searchModel.username" placeholder="请输入用户名"/>
-                </el-form-item>
-                <el-form-item>
-                    <el-input v-model="searchModel.realName" placeholder="请输入真实姓名"/>
-                </el-form-item>
-                <el-form-item>
-                    <el-input v-model="searchModel.phone" placeholder="请输入电话"/>
-                </el-form-item>
-                <el-form-item>
-                    <flex justify="around" wrap="wrap">
-                        <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" type="primary"
-                                   @click="search()">
-                            查询
-                        </el-button>
-                        <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-delete" @click="resetValue()">
-                            重置
-                        </el-button>
-                        <el-button v-if="hasPermission('sys:user:add')" icon="el-icon-plus" size="small" type="success"
-                                   @click="openAddWindow()"
-                        >新增
-                        </el-button>
-                        <el-popover
-                            placement="bottom"
-                            style="margin-left: 10px"
-                            trigger="hover"
-                            width="300"
-                        >
-                            <flex justify="around" wrap="wrap">
-                                <flex direction="column" justify="between">
-                                    <el-upload
-                                        ref="uploadUserListRef"
-                                        :action="uploadUserListUrl"
-                                        :limit="1"
-                                        :on-success="handleSuccess"
-                                        :show-file-list="false"
+            <!--  条件检索区域  -->
+            <div :class="{'is-mobile': isMobile}" class="search-container">
+                <!-- 移动端折叠面板 -->
+                <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
+                    <el-collapse-item name="1">
+                        <template slot="title">
+                            <div class="collapse-title-container">
+                                <i class="el-icon-search search-icon"></i>
+                                <span>搜索条件</span>
+                                <el-tag v-if="searchModel.username || searchModel.realName || searchModel.phone" 
+                                       size="mini" type="warning" class="search-status-tag">
+                                    <i class="el-icon-info"></i> 已设置条件
+                                </el-tag>
+                            </div>
+                            <div v-if="searchModel.username || searchModel.realName || searchModel.phone" class="collapse-summary">
+                                <template v-if="searchModel.username">用户名: {{ searchModel.username }}</template>
+                                <template v-if="searchModel.realName">
+                                    {{ searchModel.username ? ' / ' : '' }}姓名: {{ searchModel.realName }}
+                                </template>
+                                <template v-if="searchModel.phone">
+                                    {{ searchModel.username || searchModel.realName ? ' / ' : '' }}电话: {{ searchModel.phone }}
+                                </template>
+                            </div>
+                        </template>
+                        <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
+                                 size="small">
+                            <el-form-item label="用户名">
+                                <el-input v-model="searchModel.username" clearable placeholder="请输入用户名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="真实姓名">
+                                <el-input v-model="searchModel.realName" clearable placeholder="请输入真实姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="电话">
+                                <el-input v-model="searchModel.phone" clearable placeholder="请输入电话"></el-input>
+                            </el-form-item>
+                            <el-form-item class="mobile-button-group">
+                                <div class="button-grid">
+                                    <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" size="small"
+                                               type="primary" @click="search">查询
+                                    </el-button>
+                                    <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-refresh-right"
+                                               size="small" @click="resetValue">
+                                        重置
+                                    </el-button>
+                                    <el-button v-if="hasPermission('sys:user:add')"
+                                               icon="el-icon-plus"
+                                               size="small"
+                                               type="success"
+                                               @click="openAddWindow">新增
+                                    </el-button>
+                                    <el-popover
+                                        placement="bottom"
+                                        trigger="hover"
+                                        width="300"
                                     >
-                                        <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
+                                        <flex justify="around" wrap="wrap">
+                                            <flex direction="column" justify="between">
+                                                <el-upload
+                                                    ref="uploadUserListRef"
+                                                    :action="uploadUserListUrl"
+                                                    :limit="1"
+                                                    :on-success="handleSuccess"
+                                                    :show-file-list="false"
+                                                >
+                                                    <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
+                                                    </el-button>
+                                                </el-upload>
+                                                <br/>
+                                                <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
+                                                    下载模板
+                                                </el-button>
+                                            </flex>
+                                            <div>
+                                                <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
+                                                </el-button>
+                                            </div>
+                                        </flex>
+                                        <el-button v-if="hasPermission('sys:user:imAndUp')"
+                                                   slot="reference"
+                                                   size="small"
+                                                   type="warning"
+                                                   icon="el-icon-upload2"
+                                                   class="import-export-btn"
+                                        >导入/导出
                                         </el-button>
-                                    </el-upload>
-                                    <br/>
-                                    <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
-                                        下载模板
-                                    </el-button>
-                                </flex>
-                                <div>
-                                    <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
-                                    </el-button>
+                                    </el-popover>
                                 </div>
-                            </flex>
-                            <el-button v-if="hasPermission('sys:user:imAndUp')"
-                                       slot="reference"
-                                       size="small"
-                                       type="warning"
-                            >导入/导出
+                            </el-form-item>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+                
+                <!-- 桌面端常规表单 -->
+                <el-form v-else ref="searchForm" :inline="true" label-width="80px" size="small">
+                    <el-form-item>
+                        <el-input v-model="searchModel.username" placeholder="请输入用户名"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input v-model="searchModel.realName" placeholder="请输入真实姓名"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input v-model="searchModel.phone" placeholder="请输入电话"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <flex justify="around" wrap="wrap">
+                            <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" type="primary"
+                                       @click="search()">
+                                查询
                             </el-button>
-                        </el-popover>
-                    </flex>
-                </el-form-item>
-            </el-form>
+                            <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-delete" @click="resetValue()">
+                                重置
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:user:add')" icon="el-icon-plus" size="small" type="success"
+                                       @click="openAddWindow()"
+                            >新增
+                            </el-button>
+                            <el-popover
+                                placement="bottom"
+                                style="margin-left: 10px"
+                                trigger="hover"
+                                width="300"
+                            >
+                                <flex justify="around" wrap="wrap">
+                                    <flex direction="column" justify="between">
+                                        <el-upload
+                                            ref="uploadUserListRef"
+                                            :action="uploadUserListUrl"
+                                            :limit="1"
+                                            :on-success="handleSuccess"
+                                            :show-file-list="false"
+                                        >
+                                            <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
+                                            </el-button>
+                                        </el-upload>
+                                        <br/>
+                                        <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
+                                            下载模板
+                                        </el-button>
+                                    </flex>
+                                    <div>
+                                        <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
+                                        </el-button>
+                                    </div>
+                                </flex>
+                                <el-button v-if="hasPermission('sys:user:imAndUp')"
+                                           slot="reference"
+                                           size="small"
+                                           type="warning"
+                                >导入/导出
+                                </el-button>
+                            </el-popover>
+                        </flex>
+                    </el-form-item>
+                </el-form>
+            </div>
             <!--   表格部分   -->
             <el-table
                 v-loading="mainLoading"
@@ -125,14 +243,17 @@
                 :height="tableHeight"
                 border
                 stripe
+                :class="{'el-table--mobile': isMobile}"
+                :header-cell-style="isMobile ? {padding: '5px 0'} : {}"
+                :size="isMobile ? 'mini' : 'medium'"
                 style="width: 100%; margin-bottom: 10px"
             >
                 <el-table-column align="center" label="用户名" prop="username"></el-table-column>
                 <el-table-column align="center" label="姓名" prop="realName"></el-table-column>
                 <el-table-column align="center" label="所属部门" prop="departmentName"></el-table-column>
-                <el-table-column align="center" label="所属单位" prop="companyName"></el-table-column>
+                <el-table-column v-if="!isMobile" align="center" label="所属单位" prop="companyName"></el-table-column>
                 <el-table-column align="center" label="电话" prop="phone"></el-table-column>
-                <el-table-column align="center" label="微信号" prop="wechatNumber"></el-table-column>
+                <el-table-column v-if="!isMobile" align="center" label="微信号" prop="wechatNumber"></el-table-column>
                 <el-table-column align="center" label="是否启用" prop="wechatNumber">
                     <template slot-scope="scope">
                         <el-switch
@@ -164,24 +285,50 @@
                         </el-select>
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" width="200">
+                <el-table-column :width="isMobile ? 80 : 200" align="center" label="操作">
                     <template slot-scope="scope">
-                        <el-button v-if="hasPermission('sys:user:edit')"
-                                   :disabled="scope.row.username==='admin'"
-                                   icon="el-icon-edit"
-                                   size="mini"
-                                   type="primary"
-                                   @click="handleEdit(scope.row)"
-                        >编辑
-                        </el-button>
-                        <el-button v-if="hasPermission('sys:user:delete')"
-                                   :disabled="scope.row.username==='admin'"
-                                   icon="el-icon-delete"
-                                   size="mini"
-                                   type="danger"
-                                   @click="handleDelete(scope.row)"
-                        >删除
-                        </el-button>
+                        <!-- 桌面端显示按钮 -->
+                        <template v-if="!isMobile">
+                            <el-button v-if="hasPermission('sys:user:edit')"
+                                       :disabled="scope.row.username==='admin'"
+                                       icon="el-icon-edit"
+                                       size="mini"
+                                       type="primary"
+                                       @click="handleEdit(scope.row)"
+                            >编辑
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:user:delete')"
+                                       :disabled="scope.row.username==='admin'"
+                                       icon="el-icon-delete"
+                                       size="mini"
+                                       type="danger"
+                                       @click="handleDelete(scope.row)"
+                            >删除
+                            </el-button>
+                        </template>
+                        
+                        <!-- 移动端显示下拉菜单 -->
+                        <el-dropdown v-else trigger="click">
+                            <el-button size="mini" type="primary">
+                                操作<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item
+                                    v-if="hasPermission('sys:user:edit')"
+                                    :disabled="scope.row.username==='admin'"
+                                    @click.native="handleEdit(scope.row)"
+                                >
+                                    <i class="el-icon-edit"></i> 编辑
+                                </el-dropdown-item>
+                                <el-dropdown-item
+                                    v-if="hasPermission('sys:user:delete')"
+                                    :disabled="scope.row.username==='admin'"
+                                    @click.native="handleDelete(scope.row)"
+                                >
+                                    <i class="el-icon-delete"></i> 删除
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
                     </template>
                 </el-table-column>
             </el-table>
@@ -194,7 +341,8 @@
                     :page-sizes="[10, 20, 30, 40, 50]"
                     :total="total"
                     background
-                    layout="total, sizes, prev, pager, next, jumper"
+                    :layout="isMobile ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+                    :small="isMobile"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                 >
@@ -314,11 +462,15 @@ export default {
             }
         }
         return {
-            filterText: '',
-            leftTreeLoading: true,
-            mainLoading: false,
-            containerHeight: 0,//组件高度
-            tableHeight: 0, //用户列表高度
+        filterText: '',
+        leftTreeLoading: true,
+        mainLoading: false,
+        containerHeight: 0,//组件高度
+        tableHeight: 0, //用户列表高度
+        isMobile: false,
+        showDeptTree: false,
+        searchCollapse: ['1'],
+        deptCollapse: ['1'],
             searchDepartmentModel: { //左侧部门搜索条件
                 departmentName: ''
             },
@@ -375,6 +527,15 @@ export default {
     },
     methods: {
         hasPermission,
+        /**
+         * 检测设备类型
+         */
+        checkDevice() {
+            this.isMobile = window.innerWidth < 768
+            if (this.isMobile) {
+                this.showDeptTree = false
+            }
+        },
         /**
          * 导入成功后信息
          * @param res
@@ -671,12 +832,14 @@ export default {
          * 挂载window.onresize事件(动态设置table高度)
          */
         let _this = this
+        this.checkDevice()
         window.onresize = () => {
             if (_this.resizeFlag) {
                 clearTimeout(_this.resizeFlag)
             }
             _this.resizeFlag = setTimeout(() => {
                 _this.getHeight()
+                _this.checkDevice()
                 _this.resizeFlag = null
             }, 100)
         }
@@ -735,5 +898,149 @@ export default {
     width: 100px;
     height: 100px;
     display: block;
+}
+
+/* 移动端样式 */
+.mobile-dept-collapse {
+    margin-bottom: 15px;
+    z-index: 999;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.collapse-title-container {
+    display: flex;
+    align-items: center;
+}
+
+.dept-icon {
+    font-size: 18px;
+    color: #409EFF;
+    margin-right: 8px;
+}
+
+.dept-status-tag {
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.dept-toggle-container {
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    background-color: #f5f7fa;
+    border-top: 1px solid #ebeef5;
+}
+
+.toggle-button-group {
+    width: 100%;
+    max-width: 250px;
+    display: flex;
+}
+
+.toggle-button-group .el-button {
+    flex: 1;
+}
+
+.toggle-button-group .el-button i {
+    margin-right: 5px;
+}
+
+.mobile-dept-tree {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    height: calc(100vh - 50px);
+    z-index: 998;
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.search-container.is-mobile {
+    margin-top: 10px;
+}
+
+.mobile-search-collapse {
+    margin-bottom: 15px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+    font-size: 18px;
+    color: #E6A23C;
+    margin-right: 8px;
+}
+
+.search-status-tag {
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.mobile-search-form .el-form-item {
+    margin-bottom: 15px;
+}
+
+.mobile-button-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.mobile-button-group .button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+.mobile-button-group .el-button {
+    margin-left: 0 !important;
+    border-radius: 4px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-button-group .import-export-btn {
+    grid-column: span 2;
+    margin-top: 5px;
+}
+
+.mobile-button-group .el-button {
+    margin: 5px;
+}
+
+.collapse-summary {
+    font-size: 12px;
+    color: #909399;
+    margin-top: 5px;
+    margin-left: 26px;
+    padding: 5px 10px;
+    background-color: #f5f7fa;
+    border-radius: 4px;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* 移动端表格样式 */
+.el-table--mobile {
+    font-size: 12px;
+}
+
+.el-table--mobile th {
+    padding: 5px 0;
+}
+
+.el-table--mobile .el-button--mini {
+    padding: 5px 8px;
+    font-size: 11px;
 }
 </style>
