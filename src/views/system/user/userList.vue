@@ -497,8 +497,8 @@ export default {
         tableHeight: 0, //用户列表高度
         isMobile: false,
         showDeptTree: false,
-        searchCollapse: ['1'],
-        deptCollapse: ['1'],
+        searchCollapse: [],
+        deptCollapse: [],
             searchDepartmentModel: { //左侧部门搜索条件
                 departmentName: ''
             },
@@ -874,9 +874,24 @@ export default {
          * 获取表格高度
          */
         getHeight() {
-            let tableH = 50 //距离页面下方的高度
-            this.containerHeight = window.innerHeight - tableH
-            this.tableHeight = window.innerHeight - tableH - 150
+            // 移动端使用动态计算方式，避免出现滚动条
+            if (this.isMobile) {
+                // 获取页面顶部和底部元素的高度
+                const headerHeight = 50; // 顶部导航栏高度
+                const searchHeight = document.querySelector('.search-container') ? 
+                    document.querySelector('.search-container').offsetHeight : 100;
+                const paginationHeight = 40; // 分页组件高度
+                const reservedSpace = 20; // 额外保留空间
+                
+                // 计算表格可用高度
+                const usedHeight = headerHeight + searchHeight + paginationHeight + reservedSpace;
+                this.containerHeight = window.innerHeight - headerHeight;
+                this.tableHeight = window.innerHeight - usedHeight;
+            } else {
+                let tableH = 50 //距离页面下方的高度
+                this.containerHeight = window.innerHeight - tableH
+                this.tableHeight = window.innerHeight - tableH - 250
+            }
         }
     },
     mounted() {
@@ -1053,5 +1068,10 @@ export default {
 .el-table--mobile .el-button--mini {
     padding: 5px 8px;
     font-size: 11px;
+}
+
+/* 修复移动端滚动条问题 */
+.el-container {
+    overflow: hidden !important;
 }
 </style>
