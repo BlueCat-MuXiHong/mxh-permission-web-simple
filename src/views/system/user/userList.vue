@@ -62,12 +62,6 @@
                     <div class="collapse-title-container">
                         <i class="el-icon-office-building search-icon"></i>
                         <span>部门列表</span>
-                        <el-tag v-if="searchModel.departmentId" size="mini" type="primary" class="search-status-tag">
-                            <i class="el-icon-info"></i> 已选择部门
-                        </el-tag>
-                    </div>
-                    <div v-if="searchModel.departmentId" class="collapse-summary">
-                        当前选择: {{ departmentList.find(d => d.id === searchModel.departmentId)?.departmentName || '未知部门' }}
                     </div>
                 </template>
                 <div class="mobile-dept-search">

@@ -4,7 +4,7 @@ import config from '@/config'
  * 系统设置配置文件，用于管理系统的基本配置参数
  * @type {{title: string, fixedHeader: boolean, sidebarLogo: boolean}} 系统设置
  */
-module.exports = {
+export default {
     // 页面标题
     title: config.VUE_APP_TITLE || 'Vue Admin Template',
 
