@@ -686,3 +686,35 @@
     box-shadow: 0 0 8px rgba(64, 158, 255, 0.2);
   }
 }
+
+
+/**
+ * 移动端滚动条隐藏样式
+ * 
+ * 隐藏移动端浏览器的纵向滚动条，提升移动端用户体验
+ * 通过设置::-webkit-scrollbar选择器的宽度为0来隐藏滚动条
+ * 同时保持滚动功能正常
+ */
+/* 隐藏移动端纵向滚动条 */
+::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* 针对移动端设备的滚动条隐藏 */
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  /* 针对Firefox浏览器 */
+  html {
+    scrollbar-width: none;
+  }
+  
+  /* 针对IE/Edge浏览器 */
+  body {
+    -ms-overflow-style: none;
+  }
+}
