@@ -971,6 +971,7 @@ export default {
 .collapse-title-container {
     display: flex;
     align-items: center;
+    padding-left: 10px;
 }
 
 .search-icon {
