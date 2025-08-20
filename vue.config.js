@@ -1,4 +1,6 @@
 const path = require("path");
+const webpack = require('webpack')
+
 module.exports = {
     css: {
         loaderOptions: {
@@ -36,5 +38,20 @@ module.exports = {
             .options({
                 symbolId: 'icon-[name]'  // 定义symbolId格式
             })
+    },
+    configureWebpack: config => {
+        // 在生产环境中，通过DefinePlugin注入配置
+        if (process.env.NODE_ENV === 'production') {
+            config.plugins.push(
+                new webpack.DefinePlugin({
+                    'window.SYSTEM_CONFIG': JSON.stringify({
+                        VUE_APP_BASE_API: 'http://localhost:6060/api',
+                        VUE_APP_SYSTEM_NAME: '权限管理系统',
+                        VUE_APP_TITLE: '权限管理系统',
+                        VUE_APP_ENABLE_LOG: false
+                    })
+                })
+            )
+        }
     }
 }

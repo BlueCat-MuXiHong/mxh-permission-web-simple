@@ -4,11 +4,11 @@ import qs from 'qs'
 
 import {Message, MessageBox} from 'element-ui'
 import {getToken} from '@/utils/auth'
+import config from '@/config'
 
 // 创建 axios 实例
 const service = axios.create({
-    // baseURL: process.env.VUE_APP_BASE_API,
-    baseURL: 'http://localhost:6060/api',
+    baseURL: config.VUE_APP_BASE_API,
     //请求超时时间
     timeout: 10000
 })
