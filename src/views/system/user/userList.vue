@@ -1,32 +1,6 @@
 <template>
     <el-container :style="{height:containerHeight+'px'}">
-        <!-- 移动端部门树折叠按钮 -->
-        <el-collapse v-if="isMobile" v-model="deptCollapse" class="mobile-dept-collapse">
-            <el-collapse-item name="1">
-                <template slot="title">
-                    <div class="collapse-title-container">
-                        <i class="el-icon-office-building dept-icon"></i>
-                        <span>部门列表</span>
-                        <el-tag v-if="searchModel.departmentId" size="mini" type="primary" class="dept-status-tag">
-                            <i class="el-icon-info"></i> 已选择部门
-                        </el-tag>
-                    </div>
-                    <div v-if="searchModel.departmentId" class="collapse-summary">
-                        当前选择: {{ departmentList.find(d => d.id === searchModel.departmentId)?.departmentName || '未知部门' }}
-                    </div>
-                </template>
-                <div class="dept-toggle-container">
-                    <el-button-group class="toggle-button-group">
-                        <el-button size="small" type="primary" plain @click="expandAll">
-                            <i class="el-icon-arrow-down"></i> 展开所有
-                        </el-button>
-                        <el-button size="small" type="info" plain @click="collapseAll">
-                            <i class="el-icon-arrow-up"></i> 收起所有
-                        </el-button>
-                    </el-button-group>
-                </div>
-            </el-collapse-item>
-        </el-collapse>
+        
         
         <!--  左侧部门树形菜单列表  -->
         <el-aside
@@ -81,6 +55,60 @@
             </el-tree>
         </el-aside>
         <el-main>
+            <!-- 移动端部门列表折叠面板 - 放在搜索条件上方 -->
+        <el-collapse v-if="isMobile" v-model="deptCollapse" class="mobile-search-collapse">
+            <el-collapse-item name="1">
+                <template slot="title">
+                    <div class="collapse-title-container">
+                        <i class="el-icon-office-building search-icon"></i>
+                        <span>部门列表</span>
+                        <el-tag v-if="searchModel.departmentId" size="mini" type="primary" class="search-status-tag">
+                            <i class="el-icon-info"></i> 已选择部门
+                        </el-tag>
+                    </div>
+                    <div v-if="searchModel.departmentId" class="collapse-summary">
+                        当前选择: {{ departmentList.find(d => d.id === searchModel.departmentId)?.departmentName || '未知部门' }}
+                    </div>
+                </template>
+                <div class="mobile-dept-search">
+                    <el-input
+                        v-model="filterText"
+                        placeholder="搜索部门"
+                        size="mini"
+                    ></el-input>
+                    <el-button icon="el-icon-refresh-right"
+                               size="mini"
+                               type="primary"
+                               @click="resetButton"
+                    ></el-button>
+                </div>
+                <el-tree
+                    ref="leftTree"
+                    v-loading="leftTreeLoading"
+                    :data="departmentList"
+                    :default-checked-keys="[1]"
+                    :expand-on-click-node="false"
+                    :filter-node-method="filterNode"
+                    :highlight-current="true"
+                    :props="{children: 'children',label:'departmentName'}"
+                    :show-checkbox="false"
+                    default-expand-all
+                    empty-text="暂无数据"
+                    node-key="id"
+                    style="font-size: 14px"
+                    @node-click="handleNodeClick"
+                >
+                    <div slot-scope="{ node, data }" class="custom-tree-node">
+                        <div>
+            <span v-if="data.children===null || data.children.length === 0">
+              <i class="el-icon-document"></i>
+            </span>
+                            <span style="margin-left: 3px">{{ node.label }}</span>
+                        </div>
+                    </div>
+                </el-tree>
+            </el-collapse-item>
+        </el-collapse>
             <!--  条件检索区域  -->
             <div :class="{'is-mobile': isMobile}" class="search-container">
                 <!-- 移动端折叠面板 -->
@@ -571,6 +599,26 @@ export default {
             window.open(this.exportUserUrl)
         },
         /**
+         * 展开所有部门
+         */
+        expandAll() {
+            const nodes = this.$refs.leftTree.store._getAllNodes();
+            nodes.forEach(node => {
+                node.expanded = true;
+            });
+        },
+        /**
+         * 收起所有部门
+         */
+        collapseAll() {
+            const nodes = this.$refs.leftTree.store._getAllNodes();
+            nodes.forEach(node => {
+                if (node.level > 1) {
+                    node.expanded = false;
+                }
+            });
+        },
+        /**
          * 查询部门列表
          */
         getDeptList() {
@@ -612,8 +660,12 @@ export default {
             this.searchModel.pageSize = 20
             this.search()
         },
+        /**
+         * 重置部门树
+         */
         resetButton() {
             this.filterText = ''
+            this.$refs.leftTree.filter('')
             this.$refs.leftTree.setCurrentKey(null)
             this.searchModel.departmentId = ''
             this.search()
@@ -901,72 +953,9 @@ export default {
 }
 
 /* 移动端样式 */
-.mobile-dept-collapse {
-    margin-bottom: 15px;
-    z-index: 999;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
 .collapse-title-container {
     display: flex;
     align-items: center;
-}
-
-.dept-icon {
-    font-size: 18px;
-    color: #409EFF;
-    margin-right: 8px;
-}
-
-.dept-status-tag {
-    margin-left: 10px;
-    font-size: 12px;
-}
-
-.dept-toggle-container {
-    display: flex;
-    justify-content: center;
-    padding: 15px 0;
-    background-color: #f5f7fa;
-    border-top: 1px solid #ebeef5;
-}
-
-.toggle-button-group {
-    width: 100%;
-    max-width: 250px;
-    display: flex;
-}
-
-.toggle-button-group .el-button {
-    flex: 1;
-}
-
-.toggle-button-group .el-button i {
-    margin-right: 5px;
-}
-
-.mobile-dept-tree {
-    position: fixed;
-    top: 50px;
-    left: 0;
-    height: calc(100vh - 50px);
-    z-index: 998;
-    background-color: white;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-}
-
-.search-container.is-mobile {
-    margin-top: 10px;
-}
-
-.mobile-search-collapse {
-    margin-bottom: 15px;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .search-icon {
@@ -978,6 +967,13 @@ export default {
 .search-status-tag {
     margin-left: 10px;
     font-size: 12px;
+}
+
+.mobile-search-collapse {
+    margin-bottom: 15px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .mobile-search-form .el-form-item {
@@ -1013,6 +1009,21 @@ export default {
 
 .mobile-button-group .el-button {
     margin: 5px;
+}
+
+.mobile-dept-search {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.mobile-dept-search .el-input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.mobile-dept-search .el-button {
+    height: 36px;
 }
 
 .collapse-summary {
