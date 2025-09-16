@@ -6,13 +6,20 @@
             <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
                 <el-collapse-item name="1">
                     <template slot="title">
-                        搜索条件
-                        <span v-if="searchModel.companyName || searchModel.phone" class="collapse-summary">
+                        <div class="collapse-title-container">
+                            <i class="el-icon-search search-icon"></i>
+                            <span>搜索条件</span>
+                            <el-tag v-if="searchModel.companyName || searchModel.phone" 
+                                   size="mini" type="warning" class="search-status-tag">
+                                <i class="el-icon-info"></i> 已设置条件
+                            </el-tag>
+                        </div>
+                        <div v-if="searchModel.companyName || searchModel.phone" class="collapse-summary">
                             <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
                             <template v-if="searchModel.phone">
                                 {{ searchModel.companyName ? ' / ' : '' }}电话: {{ searchModel.phone }}
                             </template>
-                        </span>
+                        </div>
                     </template>
                     <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
                              size="small">
@@ -24,19 +31,21 @@
                             <el-input v-model="searchModel.phone" clearable placeholder="请输入单位电话"></el-input>
                         </el-form-item>
                         <el-form-item class="mobile-button-group">
-                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
-                                       type="primary" @click="search">查询
-                            </el-button>
-                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
-                                       size="small" @click="resetValue">
-                                重置
-                            </el-button>
-                            <el-button v-if="hasPermission('sys:company:add')"
-                                       icon="el-icon-plus"
-                                       size="small"
-                                       type="success"
-                                       @click="openAddWindow">新增
-                            </el-button>
+                            <div class="button-grid">
+                                <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
+                                           type="primary" @click="search">查询
+                                </el-button>
+                                <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
+                                           size="small" @click="resetValue">
+                                    重置
+                                </el-button>
+                                <el-button v-if="hasPermission('sys:company:add')"
+                                           icon="el-icon-plus"
+                                           size="small"
+                                           type="success"
+                                           @click="openAddWindow">新增
+                                </el-button>
+                            </div>
                         </el-form-item>
                     </el-form>
                 </el-collapse-item>
@@ -233,7 +242,7 @@ export default {
         return {
             isMobile: false,
             loading: true,
-            searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
+            searchCollapse: [], // 控制移动端搜索折叠面板的状态，默认收起
             searchModel: { //查询条件
                 pageNo: 1,
                 pageSize: 20,
@@ -571,29 +580,77 @@ export default {
     }
 }
 
-/* 移动端搜索折叠面板样式 */
+/* 移动端样式 */
+.collapse-title-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    font-size: 18px;
+    color: #E6A23C;
+    margin-right: 8px;
+}
+
+.search-status-tag {
+    margin-left: 10px;
+    font-size: 12px;
+}
+
 .mobile-search-collapse {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border-radius: 4px;
     overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #ebeef5;
+    
+    /* 确保动画效果 */
+    ::v-deep .el-collapse-item__wrap {
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: height;
+        overflow: hidden;
+    }
     
     ::v-deep .el-collapse-item__header {
         padding: 0 15px;
         font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        
+        &:hover {
+            background-color: #f5f7fa;
+        }
         
         .collapse-summary {
-            margin-left: 10px;
             font-size: 12px;
             color: #909399;
-            max-width: 200px;
+            margin-top: 5px;
+            margin-left: 26px;
+            padding: 5px 10px;
+            background-color: #f5f7fa;
+            border-radius: 4px;
+            max-width: 90%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            display: inline-block;
         }
     }
     
     ::v-deep .el-collapse-item__content {
         padding: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: #fafafa;
+    }
+    
+    /* 添加箭头旋转动画 */
+    ::v-deep .el-collapse-item__arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-right: 8px;
+        
+        &.el-collapse-item__arrow--active {
+            transform: rotate(90deg);
+        }
     }
 }
 
@@ -602,7 +659,7 @@ export default {
     .el-form-item {
         width: 100%;
         margin-right: 0;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         
         .el-input {
             width: 100%;
@@ -611,19 +668,23 @@ export default {
     
     .mobile-button-group {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        margin-top: 15px;
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
         
         .el-button {
-            flex: 1;
-            margin: 0 5px;
-            
-            &:first-child {
-                margin-left: 0;
-            }
-            
-            &:last-child {
-                margin-right: 0;
-            }
+            margin-left: 0 !important;
+            border-radius: 4px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 }
