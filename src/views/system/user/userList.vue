@@ -60,8 +60,12 @@
             <el-collapse-item name="1">
                 <template slot="title">
                     <div class="collapse-title-container">
-                        <i class="el-icon-office-building search-icon"></i>
+                        <i class="el-icon-office-building search-icon" style="color: #67c23a;"></i>
                         <span>部门列表</span>
+                        <el-tag v-if="searchModel.departmentId" 
+                               size="mini" type="success" class="search-status-tag">
+                            <i class="el-icon-check"></i> 已选择
+                        </el-tag>
                     </div>
                 </template>
                 <div class="mobile-dept-search">
@@ -69,6 +73,7 @@
                         v-model="filterText"
                         placeholder="搜索部门"
                         size="mini"
+                        prefix-icon="el-icon-search"
                     ></el-input>
                     <el-button icon="el-icon-refresh-right"
                                size="mini"
@@ -89,7 +94,7 @@
                     default-expand-all
                     empty-text="暂无数据"
                     node-key="id"
-                    style="font-size: 14px"
+                    style="font-size: 14px; margin-top: 10px;"
                     @node-click="handleNodeClick"
                 >
                     <div slot-scope="{ node, data }" class="custom-tree-node">
@@ -112,35 +117,25 @@
                             <div class="collapse-title-container">
                                 <i class="el-icon-search search-icon"></i>
                                 <span>搜索条件</span>
-                                <el-tag v-if="searchModel.username || searchModel.realName || searchModel.phone" 
-                                       size="mini" type="warning" class="search-status-tag">
-                                    <i class="el-icon-info"></i> 已设置条件
-                                </el-tag>
-                            </div>
-                            <div v-if="searchModel.username || searchModel.realName || searchModel.phone" class="collapse-summary">
-                                <template v-if="searchModel.username">用户名: {{ searchModel.username }}</template>
-                                <template v-if="searchModel.realName">
-                                    {{ searchModel.username ? ' / ' : '' }}姓名: {{ searchModel.realName }}
-                                </template>
-                                <template v-if="searchModel.phone">
-                                    {{ searchModel.username || searchModel.realName ? ' / ' : '' }}电话: {{ searchModel.phone }}
-                                </template>
                             </div>
                         </template>
                         <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
                                  size="small">
                             <el-form-item label="用户名">
-                                <el-input v-model="searchModel.username" clearable placeholder="请输入用户名"></el-input>
+                                <el-input v-model="searchModel.username" clearable placeholder="请输入用户名" 
+                                         prefix-icon="el-icon-user"></el-input>
                             </el-form-item>
                             <el-form-item label="真实姓名">
-                                <el-input v-model="searchModel.realName" clearable placeholder="请输入真实姓名"></el-input>
+                                <el-input v-model="searchModel.realName" clearable placeholder="请输入真实姓名"
+                                         prefix-icon="el-icon-s-custom"></el-input>
                             </el-form-item>
                             <el-form-item label="电话">
-                                <el-input v-model="searchModel.phone" clearable placeholder="请输入电话"></el-input>
+                                <el-input v-model="searchModel.phone" clearable placeholder="请输入电话"
+                                         prefix-icon="el-icon-phone"></el-input>
                             </el-form-item>
                             <el-form-item class="mobile-button-group">
                                 <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" size="small"
-                                           type="primary" @click="search">查询
+                                           type="primary" @click="search" :loading="mainLoading">查询
                                 </el-button>
                                 <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-refresh-right"
                                            size="small" @click="resetValue">
@@ -152,42 +147,36 @@
                                            type="success"
                                            @click="openAddWindow">新增
                                 </el-button>
-                                <el-popover
-                                    placement="bottom"
-                                    trigger="hover"
-                                    width="300"
-                                >
-                                    <flex justify="around" wrap="wrap">
-                                        <flex direction="column" justify="between">
+                                <el-dropdown v-if="hasPermission('sys:user:imAndUp')" trigger="click" size="small">
+                                    <el-button size="small" type="warning" icon="el-icon-upload2">
+                                        导入/导出<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </el-button>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item>
                                             <el-upload
                                                 ref="uploadUserListRef"
                                                 :action="uploadUserListUrl"
                                                 :limit="1"
                                                 :on-success="handleSuccess"
                                                 :show-file-list="false"
+                                                style="display: inline-block;"
                                             >
-                                                <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
+                                                <el-button icon="el-icon-upload" type="success" size="mini">导入用户
                                                 </el-button>
                                             </el-upload>
-                                            <br/>
-                                            <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
+                                        </el-dropdown-item>
+                                        <el-dropdown-item>
+                                            <el-button icon="el-icon-tickets" type="success" size="mini" @click="downUserTemplate">
                                                 下载模板
                                             </el-button>
-                                        </flex>
-                                        <div>
-                                            <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
+                                        </el-dropdown-item>
+                                        <el-dropdown-item>
+                                            <el-button icon="el-icon-download" type="primary" size="mini" @click="exportUser">
+                                                导出用户
                                             </el-button>
-                                        </div>
-                                    </flex>
-                                    <el-button v-if="hasPermission('sys:user:imAndUp')"
-                                               slot="reference"
-                                               size="small"
-                                               type="warning"
-                                               icon="el-icon-upload2"
-                                               class="import-export-btn"
-                                    >导入/导出
-                                    </el-button>
-                                </el-popover>
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
                             </el-form-item>
                         </el-form>
                     </el-collapse-item>
@@ -232,7 +221,7 @@
                                             :on-success="handleSuccess"
                                             :show-file-list="false"
                                         >
-                                            <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
+                                            <el-button icon="el-icon-upload" type="success">导入用户
                                             </el-button>
                                         </el-upload>
                                         <br/>
@@ -546,6 +535,41 @@ export default {
             errorMessages: []
         }
     },
+    computed: {
+        /**
+         * 获取活跃条件数量
+         */
+        getActiveConditionCount() {
+            let count = 0
+            if (this.searchModel.username) count++
+            if (this.searchModel.realName) count++
+            if (this.searchModel.phone) count++
+            if (this.searchModel.departmentId) count++
+            return count
+        },
+        /**
+         * 获取条件摘要
+         */
+        getConditionSummary() {
+            const conditions = []
+            if (this.searchModel.username) {
+                conditions.push(`用户名: ${this.searchModel.username}`)
+            }
+            if (this.searchModel.realName) {
+                conditions.push(`姓名: ${this.searchModel.realName}`)
+            }
+            if (this.searchModel.phone) {
+                conditions.push(`电话: ${this.searchModel.phone}`)
+            }
+            if (this.searchModel.departmentId) {
+                const deptName = this.getDepartmentNameById(this.searchModel.departmentId)
+                if (deptName) {
+                    conditions.push(`部门: ${deptName}`)
+                }
+            }
+            return conditions.join(' / ')
+        }
+    },
     methods: {
         hasPermission,
         /**
@@ -642,7 +666,7 @@ export default {
             })
         },
         /**
-         * 重置查询条件
+         * 重置搜索条件
          */
         resetValue() {
             this.searchModel.username = ''
@@ -651,6 +675,10 @@ export default {
             this.searchModel.departmentId = ''
             this.searchModel.pageNo = 1
             this.searchModel.pageSize = 20
+            // 清除部门树选中状态
+            if (this.$refs.leftTree) {
+                this.$refs.leftTree.setCurrentKey(null)
+            }
             this.search()
         },
         /**
@@ -711,6 +739,28 @@ export default {
             getAllRoleList().then(res => {
                 this.roleOptions = res.data
             })
+        },
+        /**
+         * 根据部门ID获取部门名称
+         */
+        getDepartmentNameById(deptId) {
+            if (!deptId) return ''
+            
+            // 递归查找部门名称
+            const findDeptName = (departments, id) => {
+                for (let dept of departments) {
+                    if (dept.id === id) {
+                        return dept.departmentName
+                    }
+                    if (dept.children && dept.children.length > 0) {
+                        const name = findDeptName(dept.children, id)
+                        if (name) return name
+                    }
+                }
+                return ''
+            }
+            
+            return findDeptName(this.departmentList, deptId)
         },
         /**
          * 修改用户的启用状态
@@ -960,17 +1010,15 @@ export default {
     display: block;
 }
 
-/* 移动端样式 */
+/* 移动端样式 - 参考companyList保持一致 */
 .collapse-title-container {
     display: flex;
     align-items: center;
-    padding-left: 10px;
 }
 
 .search-icon {
-    font-size: 18px;
-    color: #E6A23C;
     margin-right: 8px;
+    color: #409EFF;
 }
 
 .search-status-tag {
@@ -983,32 +1031,101 @@ export default {
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.mobile-search-form .el-form-item {
-    margin-bottom: 15px;
-}
-
-.mobile-button-group {
-    display: flex;
-    justify-content: space-between;
+    border: 1px solid #ebeef5;
     
-    .el-button {
-        flex: 1;
-        margin: 0 5px;
+    /* 确保动画效果 - 参考companyList */
+    ::v-deep .el-collapse-item__wrap {
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: height;
+        overflow: hidden;
+    }
+    
+    ::v-deep .el-collapse-item__header {
+        padding: 0 15px;
+        font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
         
-        &:first-child {
-            margin-left: 0;
+        &:hover {
+            background-color: #f5f7fa;
         }
         
-        &:last-child {
-            margin-right: 0;
+        .collapse-summary {
+            font-size: 12px;
+            color: #909399;
+            margin-top: 5px;
+            margin-left: 26px;
+            padding: 5px 10px;
+            background-color: #f5f7fa;
+            border-radius: 4px;
+            max-width: 90%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
         }
     }
     
-    .import-export-btn {
-        flex: 1;
-        margin: 0 5px;
+    ::v-deep .el-collapse-item__content {
+        padding: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: #fafafa;
+    }
+    
+    /* 添加箭头旋转动画 */
+    ::v-deep .el-collapse-item__arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-right: 8px;
+        
+        &.el-collapse-item__arrow--active {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+/* 移动端搜索表单样式 - 参考companyList */
+.mobile-search-form {
+    padding: 10px;
+    background-color: #fafafa;
+    
+    .el-form-item {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 15px;
+        
+        .el-input {
+            width: 100%;
+        }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    .mobile-button-group {
+        display: flex;
+        justify-content: space-between;
+        
+        .el-button {
+            flex: 1;
+            margin: 0 5px;
+            
+            &:first-child {
+                margin-left: 0;
+            }
+            
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+        
+        .el-dropdown {
+            flex: 1;
+            
+            .el-button {
+                width: 100%;
+            }
+        }
     }
 }
 
@@ -1016,6 +1133,7 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    padding: 0 10px;
 }
 
 .mobile-dept-search .el-input {
@@ -1027,22 +1145,7 @@ export default {
     height: 36px;
 }
 
-.collapse-summary {
-    font-size: 12px;
-    color: #909399;
-    margin-top: 5px;
-    margin-left: 26px;
-    padding: 5px 10px;
-    background-color: #f5f7fa;
-    border-radius: 4px;
-    max-width: 90%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block;
-}
-
-/* 移动端表格样式 */
+/* 移动端表格样式 - 参考companyList */
 .el-table--mobile {
     font-size: 12px;
 }

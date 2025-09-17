@@ -319,12 +319,6 @@ export default {
     watch: {
         'isMobile'() {
             this.getTableHeight()
-        },
-        'searchCollapse'() {
-            // 当搜索折叠面板状态变化时，重新计算表格高度
-            this.$nextTick(() => {
-                this.getTableHeight()
-            })
         }
     },
     methods: {
