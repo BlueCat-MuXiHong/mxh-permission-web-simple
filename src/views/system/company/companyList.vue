@@ -289,9 +289,9 @@ export default {
         },
         'searchCollapse'() {
             // 当搜索折叠面板状态变化时，重新计算表格高度
-            this.$nextTick(() => {
-                this.getTableHeight()
-            })
+            // this.$nextTick(() => {
+            //     this.getTableHeight()
+            // })
         }
     },
     methods: {
@@ -469,7 +469,7 @@ export default {
             let tableHeight = window.innerHeight - offset;
             
             // 设置最小高度，同时设置最大高度以避免滚动条
-            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 250);
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 300);
         }
         
     },
