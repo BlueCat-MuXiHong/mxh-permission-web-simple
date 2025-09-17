@@ -41,6 +41,7 @@
                                     <div v-if="level2.children.length" class="permission-select-all">
                                         <el-checkbox
                                             v-model="selectAll[level2.label]"
+                                            :indeterminate="indeterminate[level2.label]"
                                             @change="selectColumn(level2.children, $event, {}, 'all', level2.label)"
                                         >
                                             全选
@@ -107,6 +108,7 @@ export default {
             name: '',
             checkedList: [],
             selectAll: {},
+            indeterminate: {}, // 存储半选状态
             activeNames: [] // 控制折叠面板展开状态
         }
     },
@@ -126,6 +128,8 @@ export default {
             // 全选 涉及到数据记录的更改、单选的变动
             if (key === 'all') {
                 this.selectAll[allName] = checked
+                // 全选时半选状态应该为false
+                this.$set(this.indeterminate, allName, false)
                 for (let i = 0; i < data.length; i++) {
                     data[i].checked = checked
                     this.setCheckedData(data[i], checked)
@@ -161,7 +165,9 @@ export default {
                     this.checkedList.push(checkObj)
                 }
                 this.setCheckedData(data, checked)
-                this.selectAll[allName] = this.hasAllChecked(childData.children) // 子集一变动，全选重置
+                this.selectAll[allName] = this.hasAllChecked(childData.children)
+                // 更新半选状态
+                this.$set(this.indeterminate, allName, this.getIndeterminateStatus(childData.children))
             }
         },
         // 数据增删当前已选
@@ -203,6 +209,17 @@ export default {
                 return item.checked
             })
         },
+        /**
+         * 获取半选状态
+         * 当部分选中时为true，全选或全不选时为false
+         * @param list
+         * @param allName
+         * @returns {boolean}
+         */
+        getIndeterminateStatus(list, allName) {
+            const checkedCount = list.filter(item => item.checked).length
+            return checkedCount > 0 && checkedCount < list.length
+        },
         // 对于编辑而言，一进来应该把标记的选项保存
         setCheckedItems(list) {
             if (list && list.length) {
@@ -211,9 +228,16 @@ export default {
                         item.children.forEach(menu => {
                             if (menu.children) {
                                 const permissions = menu.children
+                                const allChecked = this.hasAllChecked(permissions)
+                                const indeterminateStatus = this.getIndeterminateStatus(permissions, menu.label)
+                                
                                 this.selectAll = {
                                     ...this.selectAll,
-                                    [menu.label]: this.hasAllChecked(permissions)
+                                    [menu.label]: allChecked
+                                }
+                                this.indeterminate = {
+                                    ...this.indeterminate,
+                                    [menu.label]: indeterminateStatus
                                 }
                                 this.checkedList = [
                                     ...this.checkedList,

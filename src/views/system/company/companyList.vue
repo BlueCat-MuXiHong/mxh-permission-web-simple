@@ -450,7 +450,7 @@ export default {
                 // 考虑底部固定按钮的空间
                 offset += 80; // 增加固定分页组件的高度
             } else {
-                // 桌面端的偏移量，增加偏移量以减小表格高度，避免滚动条
+                // 桌面端的偏移量
                 offset = 210;
             }
             
@@ -458,7 +458,7 @@ export default {
             let tableHeight = window.innerHeight - offset;
             
             // 设置最小高度，同时设置最大高度以避免滚动条
-            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 230);
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 250);
         }
         
     },

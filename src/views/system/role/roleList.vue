@@ -6,10 +6,10 @@
             <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
                 <el-collapse-item name="1">
                     <template slot="title">
-                        搜索条件
-                        <span v-if="searchModel.roleName" class="collapse-summary">
-                            角色名称: {{ searchModel.roleName }}
-                        </span>
+                        <div class="collapse-title-container">
+                            <i class="el-icon-search search-icon"></i>
+                            <span>搜索条件</span>
+                        </div>
                     </template>
                     <el-form
                         ref="searchForm"
@@ -22,15 +22,15 @@
                             <el-input v-model="searchModel.roleName" clearable placeholder="请输入角色名称"/>
                         </el-form-item>
                         <el-form-item class="mobile-button-group">
-                            <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-search" size="small"
-                                       type="primary" @click="search">查询
+                            <el-button v-if="hasPermission('sys:role:add')" icon="el-icon-plus" size="small"
+                                       type="success" @click="openAddWindow">新增
                             </el-button>
                             <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-refresh-right"
                                        size="small" @click="resetValue">
                                 重置
                             </el-button>
-                            <el-button v-if="hasPermission('sys:role:add')" icon="el-icon-plus" size="small"
-                                       type="success" @click="openAddWindow">新增
+                            <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -50,14 +50,14 @@
                     <el-input v-model="searchModel.roleName" placeholder="请输入角色名称"/>
                 </el-form-item>
                 <el-form-item>
-                    <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-search" type="primary"
-                               @click="search()">查询
+                    <el-button v-if="hasPermission('sys:role:add')" icon="el-icon-plus" type="success"
+                               @click="openAddWindow">新增
                     </el-button>
                     <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-refresh-right" @click="resetValue">
                         重置
                     </el-button>
-                    <el-button v-if="hasPermission('sys:role:add')" icon="el-icon-plus" type="success"
-                               @click="openAddWindow">新增
+                    <el-button v-if="hasPermission('sys:role:search')" icon="el-icon-search" type="primary"
+                               @click="search()">查询
                     </el-button>
                 </el-form-item>
             </el-form>
@@ -273,7 +273,7 @@ export default {
                 pageNo: 1,
                 pageSize: 20
             },
-            searchCollapse: ['1'], // 控制移动端搜索折叠面板的状态，默认展开
+            searchCollapse: [], // 控制移动端搜索折叠面板的状态，默认收起
             total: 0,
             roleList: [],
             role: {
@@ -500,9 +500,9 @@ export default {
                 offset = this.searchCollapse.length > 0 ? 370 : 180;
                 
                 // 考虑底部固定按钮的空间
-                offset += 50; // 增加固定分页组件的高度
+                offset += 80; // 增加固定分页组件的高度
             } else {
-                // 桌面端的偏移量，增加偏移量以减小表格高度，避免滚动条
+                // 桌面端的偏移量
                 offset = 210;
             }
             
@@ -638,14 +638,15 @@ export default {
         padding: 0 15px;
         font-size: 14px;
         
-        .collapse-summary {
-            margin-left: 10px;
-            font-size: 12px;
-            color: #909399;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .collapse-title-container {
+            display: flex;
+            align-items: center;
+            
+            .search-icon {
+                margin-right: 8px;
+                font-size: 16px;
+                color: #409EFF;
+            }
         }
     }
     
