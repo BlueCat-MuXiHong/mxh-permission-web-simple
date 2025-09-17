@@ -140,6 +140,7 @@ import Flex from "@/components/Flex/Flex.vue";
 import SystemDialog from "@/components/Dialog/SystemDialog.vue";
 import {getToken} from "@/utils/auth";
 import {getUserId, resetPassword, updateUser} from "@/api/user";
+import config from '@/config/index.js';
 
 export default {
     components: {
@@ -247,7 +248,7 @@ export default {
                 realName: [{required: true, trigger: 'blur', message: '请填写姓名'}],
                 gender: [{required: true, trigger: 'change', message: '请选择性别'}]
             },
-            uploadUrl: process.env.VUE_APP_BASE_API + '/file/upload',
+            uploadUrl: config.VUE_APP_BASE_API + '/file/upload',
             uploadHeader: {'token': getToken()}
         }
     },

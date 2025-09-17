@@ -235,6 +235,7 @@ import SystemDialog from '@/components/Dialog/SystemDialog.vue'
 import Flex from '@/components/Flex/Flex.vue'
 import {getToken} from '@/utils/auth'
 import hasPermission from '@/router/permission'
+import config from '@/config/index.js'
 
 export default {
     components: {Flex, SystemDialog},
@@ -271,7 +272,7 @@ export default {
             total: 0,//总条数,
             //上传需要携带的数据
             uploadHeader: {'token': getToken()},
-            uploadUrl: process.env.VUE_APP_BASE_API + '/file/upload',
+            uploadUrl: config.VUE_APP_BASE_API + '/file/upload',
             resizeFlag: null // 用于防抖resize事件
         }
     },
@@ -334,6 +335,7 @@ export default {
          * 新增单位
          */
         openAddWindow() {
+            this.$resetForm('companyForm', this.company)
             this.companyDialog.visible = true
             this.companyDialog.title = '新增'
         },
