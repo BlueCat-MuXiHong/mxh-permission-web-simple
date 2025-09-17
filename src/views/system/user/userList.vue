@@ -139,57 +139,55 @@
                                 <el-input v-model="searchModel.phone" clearable placeholder="请输入电话"></el-input>
                             </el-form-item>
                             <el-form-item class="mobile-button-group">
-                                <div class="button-grid">
-                                    <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" size="small"
-                                               type="primary" @click="search">查询
-                                    </el-button>
-                                    <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-refresh-right"
-                                               size="small" @click="resetValue">
-                                        重置
-                                    </el-button>
-                                    <el-button v-if="hasPermission('sys:user:add')"
-                                               icon="el-icon-plus"
-                                               size="small"
-                                               type="success"
-                                               @click="openAddWindow">新增
-                                    </el-button>
-                                    <el-popover
-                                        placement="bottom"
-                                        trigger="hover"
-                                        width="300"
-                                    >
-                                        <flex justify="around" wrap="wrap">
-                                            <flex direction="column" justify="between">
-                                                <el-upload
-                                                    ref="uploadUserListRef"
-                                                    :action="uploadUserListUrl"
-                                                    :limit="1"
-                                                    :on-success="handleSuccess"
-                                                    :show-file-list="false"
-                                                >
-                                                    <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
-                                                    </el-button>
-                                                </el-upload>
-                                                <br/>
-                                                <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
-                                                    下载模板
+                                <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" size="small"
+                                           type="primary" @click="search">查询
+                                </el-button>
+                                <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-refresh-right"
+                                           size="small" @click="resetValue">
+                                    重置
+                                </el-button>
+                                <el-button v-if="hasPermission('sys:user:add')"
+                                           icon="el-icon-plus"
+                                           size="small"
+                                           type="success"
+                                           @click="openAddWindow">新增
+                                </el-button>
+                                <el-popover
+                                    placement="bottom"
+                                    trigger="hover"
+                                    width="300"
+                                >
+                                    <flex justify="around" wrap="wrap">
+                                        <flex direction="column" justify="between">
+                                            <el-upload
+                                                ref="uploadUserListRef"
+                                                :action="uploadUserListUrl"
+                                                :limit="1"
+                                                :on-success="handleSuccess"
+                                                :show-file-list="false"
+                                            >
+                                                <el-button icon="el-icon-upload" type="success" @click="importUser()">导入用户
                                                 </el-button>
-                                            </flex>
-                                            <div>
-                                                <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
-                                                </el-button>
-                                            </div>
+                                            </el-upload>
+                                            <br/>
+                                            <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
+                                                下载模板
+                                            </el-button>
                                         </flex>
-                                        <el-button v-if="hasPermission('sys:user:imAndUp')"
-                                                   slot="reference"
-                                                   size="small"
-                                                   type="warning"
-                                                   icon="el-icon-upload2"
-                                                   class="import-export-btn"
-                                        >导入/导出
-                                        </el-button>
-                                    </el-popover>
-                                </div>
+                                        <div>
+                                            <el-button icon="el-icon-download" type="primary" @click="exportUser()">导出用户
+                                            </el-button>
+                                        </div>
+                                    </flex>
+                                    <el-button v-if="hasPermission('sys:user:imAndUp')"
+                                               slot="reference"
+                                               size="small"
+                                               type="warning"
+                                               icon="el-icon-upload2"
+                                               class="import-export-btn"
+                                    >导入/导出
+                                    </el-button>
+                                </el-popover>
                             </el-form-item>
                         </el-form>
                     </el-collapse-item>
@@ -993,33 +991,25 @@ export default {
 
 .mobile-button-group {
     display: flex;
-    flex-direction: column;
-    margin-top: 15px;
-}
-
-.mobile-button-group .button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    width: 100%;
-}
-
-.mobile-button-group .el-button {
-    margin-left: 0 !important;
-    border-radius: 4px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mobile-button-group .import-export-btn {
-    grid-column: span 2;
-    margin-top: 5px;
-}
-
-.mobile-button-group .el-button {
-    margin: 5px;
+    justify-content: space-between;
+    
+    .el-button {
+        flex: 1;
+        margin: 0 5px;
+        
+        &:first-child {
+            margin-left: 0;
+        }
+        
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+    
+    .import-export-btn {
+        flex: 1;
+        margin: 0 5px;
+    }
 }
 
 .mobile-dept-search {

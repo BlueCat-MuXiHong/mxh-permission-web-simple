@@ -21,21 +21,19 @@
                             <el-input v-model="searchModel.phone" clearable placeholder="请输入单位电话"></el-input>
                         </el-form-item>
                         <el-form-item class="mobile-button-group">
-                            <div class="button-grid">
-                                <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
-                                           type="primary" @click="search">查询
-                                </el-button>
-                                <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
-                                           size="small" @click="resetValue">
-                                    重置
-                                </el-button>
-                                <el-button v-if="hasPermission('sys:company:add')"
-                                           icon="el-icon-plus"
-                                           size="small"
-                                           type="success"
-                                           @click="openAddWindow">新增
-                                </el-button>
-                            </div>
+                            <el-button v-if="hasPermission('sys:company:add')"
+                                       icon="el-icon-plus"
+                                       size="small"
+                                       type="success"
+                                       @click="openAddWindow">新增
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
+                                       size="small" @click="resetValue">
+                                重置
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
+                            </el-button>
                         </el-form-item>
                     </el-form>
                 </el-collapse-item>
@@ -659,23 +657,19 @@ export default {
     
     .mobile-button-group {
         display: flex;
-        flex-direction: column;
-        margin-top: 15px;
-        
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
-        }
+        justify-content: space-between;
         
         .el-button {
-            margin-left: 0 !important;
-            border-radius: 4px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            flex: 1;
+            margin: 0 5px;
+            
+            &:first-child {
+                margin-left: 0;
+            }
+            
+            &:last-child {
+                margin-right: 0;
+            }
         }
     }
 }
