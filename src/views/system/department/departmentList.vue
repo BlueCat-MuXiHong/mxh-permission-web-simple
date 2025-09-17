@@ -6,13 +6,10 @@
             <el-collapse v-if="isMobile" v-model="searchCollapse" class="mobile-search-collapse">
                 <el-collapse-item name="1">
                     <template slot="title">
-                        搜索条件
-                        <span v-if="searchModel.companyName || searchModel.departmentName" class="collapse-summary">
-                            <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
-                            <template v-if="searchModel.departmentName">
-                                {{ searchModel.companyName ? ' / ' : '' }}部门名称: {{ searchModel.departmentName }}
-                            </template>
-                        </span>
+                        <div class="collapse-title-container">
+                            <i class="el-icon-search search-icon"></i>
+                            <span>搜索条件</span>
+                        </div>
                     </template>
                     <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
                              size="small">
@@ -25,18 +22,18 @@
                                       placeholder="请输入部门名称"></el-input>
                         </el-form-item>
                         <el-form-item class="mobile-button-group">
-                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-search" size="small"
-                                       type="primary" @click="search">查询
-                            </el-button>
-                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-refresh-right"
-                                       size="small" @click="resetValue">
-                                重置
-                            </el-button>
                             <el-button v-if="hasPermission('sys:department:add')"
                                        icon="el-icon-plus"
                                        size="small"
                                        type="success"
                                        @click="openAddWindow">新增
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-refresh-right"
+                                       size="small" @click="resetValue">
+                                重置
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:department:search')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -93,9 +90,9 @@
                              prop="parentName"></el-table-column>
             <el-table-column :min-width="isMobile ? 100 : 'auto'" align="center" label="所属单位"
                              prop="companyName"></el-table-column>
-            <el-table-column v-if="!isMobile" align="center" label="部门电话" prop="phone"></el-table-column>
-            <el-table-column v-if="!isMobile" align="center" label="部门邮箱" prop="email"></el-table-column>
-            <el-table-column v-if="!isMobile" align="center" label="部门地址" prop="address"></el-table-column>
+            <el-table-column  align="center" label="部门电话" prop="phone"></el-table-column>
+            <el-table-column  align="center" label="部门邮箱" prop="email"></el-table-column>
+            <el-table-column  align="center" label="部门地址" prop="address"></el-table-column>
             <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <!-- 桌面端显示按钮 -->
                 <template v-if="!isMobile" v-slot="scope">
@@ -592,20 +589,21 @@ input[aria-hidden="true"] {
     ::v-deep .el-collapse-item__header {
         padding: 0 15px;
         font-size: 14px;
-        
-        .collapse-summary {
-            margin-left: 10px;
-            font-size: 12px;
-            color: #909399;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
     }
     
     ::v-deep .el-collapse-item__content {
         padding: 10px;
+    }
+}
+
+/* 折叠面板标题容器 */
+.collapse-title-container {
+    display: flex;
+    align-items: center;
+    
+    .search-icon {
+        margin-right: 8px;
+        color: #409EFF;
     }
 }
 

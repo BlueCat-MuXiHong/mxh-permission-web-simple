@@ -576,9 +576,8 @@ export default {
 }
 
 .search-icon {
-    font-size: 18px;
-    color: #E6A23C;
     margin-right: 8px;
+    color: #409EFF;
 }
 
 .search-status-tag {
