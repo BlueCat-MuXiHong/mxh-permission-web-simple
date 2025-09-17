@@ -15,9 +15,11 @@ import resetForm from '@/utils/resetForm'
 import objCopy from '@/utils/objCopy'
 // 引入拖拽指令
 import '@/components/Dialog/js/dialogDrag.js'
+import MyConfirm from '@/utils/myConfirm'
 
 Vue.prototype.$resetForm = resetForm
 Vue.prototype.$objCopy = objCopy
+Vue.prototype.$myConfirm = MyConfirm
 
 Vue.use(ElementUI)
 // 关闭Vue.js在生产环境下的启动提示信息

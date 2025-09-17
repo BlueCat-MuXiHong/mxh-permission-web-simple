@@ -9,16 +9,6 @@
                         <div class="collapse-title-container">
                             <i class="el-icon-search search-icon"></i>
                             <span>搜索条件</span>
-                            <el-tag v-if="searchModel.companyName || searchModel.phone" 
-                                   size="mini" type="warning" class="search-status-tag">
-                                <i class="el-icon-info"></i> 已设置条件
-                            </el-tag>
-                        </div>
-                        <div v-if="searchModel.companyName || searchModel.phone" class="collapse-summary">
-                            <template v-if="searchModel.companyName">单位名称: {{ searchModel.companyName }}</template>
-                            <template v-if="searchModel.phone">
-                                {{ searchModel.companyName ? ' / ' : '' }}电话: {{ searchModel.phone }}
-                            </template>
                         </div>
                     </template>
                     <el-form ref="searchForm" :inline="false" class="mobile-search-form" label-width="80px"
@@ -213,12 +203,10 @@
                                 :data="uploadHeader"
                                 :on-success="handleAvatarSuccess"
                                 :show-file-list="false"
-                                class="avatar-uploader"
-                            >
+                                class="avatar-uploader">
                                 <img
                                     v-if="company.logo" :src="company.logo" alt=""
-                                    class="el-upload-list__item-thumbnail" style="width: 100px;height: 100px"
-                                >
+                                    class="el-upload-list__item-thumbnail" style="width: 100px;height: 100px">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"/>
                             </el-upload>
                         </div>
@@ -354,6 +342,7 @@ export default {
          * 删除单位
          */
         async handleDelete(row) {
+            console.log('删除单位', row)
             let confirm = await this.$myConfirm(`确定要删除单位：${row.companyName}吗?`)
             if (confirm) {
                 deleteCompany({id: row.id}).then(res => {
@@ -471,7 +460,7 @@ export default {
             let tableHeight = window.innerHeight - offset;
             
             // 设置最小高度，同时设置最大高度以避免滚动条
-            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 300);
+            this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 230);
         }
         
     },
