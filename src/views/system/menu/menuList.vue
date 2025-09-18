@@ -504,6 +504,16 @@ export default {
     }
 }
 
+/* 移动端表格阴影效果 */
+::v-deep .el-table {
+    &.el-table--mobile {
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #ebeef5;
+    }
+}
+
 /* 操作按钮样式优化 */
 .operation-buttons {
     display: flex;

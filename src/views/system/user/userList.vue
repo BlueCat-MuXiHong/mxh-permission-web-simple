@@ -1159,6 +1159,16 @@ export default {
     font-size: 11px;
 }
 
+/* 移动端表格阴影效果 */
+::v-deep .el-table {
+    &.el-table--mobile {
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #ebeef5;
+    }
+}
+
 /* 修复移动端滚动条问题 */
 .el-container {
     overflow: hidden !important;
