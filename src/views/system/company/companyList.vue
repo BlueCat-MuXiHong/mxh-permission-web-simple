@@ -500,8 +500,19 @@ export default {
     }
     
     &.el-table--mobile {
+        font-size: 12px;
+        
+        th {
+            padding: 5px 0;
+        }
+        
         .el-table__body td {
             padding: 5px 0;
+        }
+        
+        .el-button--mini {
+            padding: 5px 8px;
+            font-size: 11px;
         }
         
         .el-button.is-circle {

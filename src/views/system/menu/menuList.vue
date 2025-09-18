@@ -476,9 +476,26 @@ export default {
 <style lang="scss" scoped>
 /* 表格样式优化 */
 ::v-deep .el-table {
+    font-size: 14px;
+    
+    .cell {
+        padding: 8px 5px;
+    }
+    
     &.el-table--mobile {
+        font-size: 12px;
+        
+        th {
+            padding: 5px 0;
+        }
+        
         .el-table__body td {
             padding: 5px 0;
+        }
+        
+        .el-button--mini {
+            padding: 5px 8px;
+            font-size: 11px;
         }
         
         .el-button.is-circle {

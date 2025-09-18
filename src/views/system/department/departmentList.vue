@@ -585,14 +585,41 @@ input[aria-hidden="true"] {
     margin-bottom: 10px;
     border-radius: 4px;
     overflow: hidden;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #ebeef5;
+    
+    /* 确保动画效果 - 参考userList */
+    ::v-deep .el-collapse-item__wrap {
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: height;
+        overflow: hidden;
+    }
     
     ::v-deep .el-collapse-item__header {
         padding: 0 15px;
         font-size: 14px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        
+        &:hover {
+            background-color: #f5f7fa;
+        }
     }
     
     ::v-deep .el-collapse-item__content {
         padding: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: #fafafa;
+    }
+    
+    /* 添加箭头旋转动画 */
+    ::v-deep .el-collapse-item__arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-right: 8px;
+        
+        &.el-collapse-item__arrow--active {
+            transform: rotate(90deg);
+        }
     }
 }
 
@@ -647,8 +674,19 @@ input[aria-hidden="true"] {
     }
     
     &.el-table--mobile {
+        font-size: 12px;
+        
+        th {
+            padding: 5px 0;
+        }
+        
         .el-table__body td {
             padding: 5px 0;
+        }
+        
+        .el-button--mini {
+            padding: 5px 8px;
+            font-size: 11px;
         }
         
         .el-button.is-circle {
