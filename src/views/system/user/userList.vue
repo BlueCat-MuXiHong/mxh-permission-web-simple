@@ -149,10 +149,10 @@
                                 </el-button>
                                 <el-dropdown v-if="hasPermission('sys:user:imAndUp')" trigger="click" size="small">
                                     <el-button size="small" type="warning" icon="el-icon-upload2">
-                                        导入/导出<i class="el-icon-arrow-down el-icon--right"></i>
+                                        导入/导出
                                     </el-button>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item>
+                                        <el-dropdown-item style="padding: 8px 15px;">
                                             <el-upload
                                                 ref="uploadUserListRef"
                                                 :action="uploadUserListUrl"
@@ -165,12 +165,12 @@
                                                 </el-button>
                                             </el-upload>
                                         </el-dropdown-item>
-                                        <el-dropdown-item>
+                                        <el-dropdown-item style="padding: 8px 15px;">
                                             <el-button icon="el-icon-tickets" type="success" size="mini" @click="downUserTemplate">
                                                 下载模板
                                             </el-button>
                                         </el-dropdown-item>
-                                        <el-dropdown-item>
+                                        <el-dropdown-item style="padding: 8px 15px;">
                                             <el-button icon="el-icon-download" type="primary" size="mini" @click="exportUser">
                                                 导出用户
                                             </el-button>
@@ -220,12 +220,12 @@
                                             :limit="1"
                                             :on-success="handleSuccess"
                                             :show-file-list="false"
+                                            style="margin-bottom: 8px;"
                                         >
                                             <el-button icon="el-icon-upload" type="success">导入用户
                                             </el-button>
                                         </el-upload>
-                                        <br/>
-                                        <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()">
+                                        <el-button icon="el-icon-tickets" type="success" @click="downUserTemplate()" style="margin-bottom: 8px;">
                                             下载模板
                                         </el-button>
                                     </flex>
@@ -931,7 +931,7 @@ export default {
                 this.containerHeight = window.innerHeight - headerHeight;
                 this.tableHeight = window.innerHeight - usedHeight;
             } else {
-                let tableH = 50 //距离页面下方的高度
+                let tableH = 80 //距离页面下方的高度
                 this.containerHeight = window.innerHeight - tableH
                 this.tableHeight = window.innerHeight - tableH - 250
             }
@@ -1108,7 +1108,7 @@ export default {
         
         .el-button {
             flex: 1;
-            margin: 0 5px;
+            margin: 5px 5px;
             
             &:first-child {
                 margin-left: 0;
