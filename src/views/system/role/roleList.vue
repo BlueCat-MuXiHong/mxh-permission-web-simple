@@ -247,6 +247,7 @@
                 :role-id="assignRoleDialog.roleId"
                 :role-name="assignRoleDialog.roleName"
                 @save-role="onConfirmRole"
+                @close="closeAssignRoleDialog"
             ></MobileRoleManage>
         </el-dialog>
     </el-main>
@@ -273,7 +274,6 @@ export default {
                 pageNo: 1,
                 pageSize: 20
             },
-            searchCollapse: [], // 控制移动端搜索折叠面板的状态，默认收起
             total: 0,
             roleList: [],
             role: {
@@ -426,6 +426,12 @@ export default {
          */
         onClose() {
             this.roleDialog.visible = false
+        },
+        /**
+         * 关闭分配权限对话框
+         */
+        closeAssignRoleDialog() {
+            this.assignRoleDialog.visible = false
         },
         /**
          * 确认

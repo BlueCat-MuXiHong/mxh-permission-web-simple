@@ -2,6 +2,9 @@
     <div class="mobile-role-container">
         <div class="mobile-role-header">
             <h3>分配权限</h3>
+            <div class="header-right">
+                <i class="el-icon-close" @click="$emit('close')"></i>
+            </div>
         </div>
         
         <div class="mobile-role-content">
@@ -261,6 +264,10 @@ export default {
             }
             this.$emit('save-role', roleOption)
         },
+        // 关闭弹窗
+        close() {
+            this.$emit('close')
+        },
         // 提示框封装
         doAlert(type, message) {
             if (type) {
@@ -286,7 +293,9 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    max-height: 100vh;
     background-color: #f5f5f5;
+    overflow: hidden;
 }
 
 .mobile-role-header {
@@ -294,6 +303,11 @@ export default {
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    flex-shrink: 0; /* 防止头部被压缩 */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 标题居中 */
+    position: relative;
     
     h3 {
         margin: 0;
@@ -301,12 +315,36 @@ export default {
         font-size: 18px;
         font-weight: 500;
     }
+    
+    .header-right {
+        position: absolute;
+        right: 15px; /* 移到右边 */
+        top: 50%;
+        transform: translateY(-50%);
+        
+        i {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            padding: 8px;
+            
+            &:hover {
+                color: #333;
+            }
+            
+            &:active {
+                opacity: 0.7;
+            }
+        }
+    }
 }
 
 .mobile-role-content {
     flex: 1;
     overflow-y: auto;
     padding: 15px;
+    min-height: 0; /* 修复flex子项最小高度问题 */
+    -webkit-overflow-scrolling: touch; /* 移动端平滑滚动 */
 }
 
 .mobile-role-info {
@@ -413,14 +451,16 @@ export default {
 
 .mobile-role-footer {
     background-color: #fff;
-    padding: 15px;
+    padding: 15px 15px 35px; /* 进一步增加底部内边距，让按钮更往上 */
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
+    flex-shrink: 0; /* 防止底部被压缩 */
     
     ::v-deep .el-button {
         border-radius: 20px;
         padding: 10px;
         font-size: 16px;
+        margin-bottom: 15px; /* 增加底部边距让按钮更靠上 */
     }
 }
 
@@ -429,10 +469,17 @@ export default {
     .mobile-role-container {
         height: 100vh;
         max-height: 100vh;
+        position: fixed; /* 固定定位防止整体滚动 */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
     
     .mobile-role-content {
         padding: 10px;
+        /* 确保内容区域不会溢出 */
+        max-height: calc(100vh - 120px); /* 减去头部和底部的高度 */
     }
     
     ::v-deep .el-collapse-item__header {
