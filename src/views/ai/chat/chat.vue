@@ -69,9 +69,9 @@
       <el-footer class="chat-footer" height="auto">
         <div class="input-container">
           <el-input type="textarea" :rows="1" :autosize="{ minRows: 1, maxRows: 4 }"
-            placeholder="请输入您的问题... (Shift + Enter 换行)" v-model="userInput" resize="none" class="chat-input"
-            @keydown.enter.native="handleEnter"></el-input>
-          <el-button type="primary" class="send-btn" :loading="isSending" :disabled="!userInput.trim()"
+            placeholder="请输入您的问题... (Shift + Enter 换行)" v-model="questionModel.question" resize="none"
+            class="chat-input" @keydown.enter.native="handleEnter"></el-input>
+          <el-button type="primary" class="send-btn" :loading="isSending" :disabled="!questionModel.question.trim()"
             @click="sendMessage" icon="el-icon-s-promotion" circle></el-button>
         </div>
       </el-footer>
@@ -80,11 +80,21 @@
 </template>
 
 <script>
+import { ask } from '../../../api/ai';
+import { getToken } from '@/utils/auth';
+import config from '@/config';
+
 export default {
   name: 'AiChat',
   data() {
     return {
-      userInput: '',
+      questionModel: {
+        sessionId: '',
+        modelCode: 'deepseek',
+        question: '',
+        stream: true
+      },
+      taskId: '',
       isSending: false,
       messages: []
     }
@@ -107,9 +117,15 @@ export default {
       }
     },
     // 发送消息
-    sendMessage() {
-      const content = this.userInput.trim();
+    async sendMessage() {
+      const content = this.questionModel.question.trim();
       if (!content || this.isSending) return;
+
+      // 构造请求参数，避免引用问题
+      const requestParams = {
+        ...this.questionModel,
+        question: content
+      };
 
       // 添加用户消息
       this.messages.push({
@@ -118,49 +134,107 @@ export default {
         time: new Date()
       });
 
-      this.userInput = '';
+      // 清空输入框
+      this.questionModel.question = '';
       this.isSending = true;
       this.scrollToBottom();
 
-      // 模拟 AI 回复
-      this.simulateAiResponse();
+      try {
+        // 调用聊天接口
+        const res = await ask(requestParams);
+        if (res.code === 200) {
+          this.questionModel.sessionId = res.data.sessionId;
+          this.taskId = res.data.askId;
+
+          // 添加 AI 消息占位
+          this.messages.push({
+            sender: 'ai',
+            loading: true,
+            content: '',
+            time: new Date()
+          });
+          this.scrollToBottom();
+
+          // 开始 SSE 连接
+          await this.connectSSE(this.taskId);
+        } else {
+          this.$message.error(res.message || '请求失败');
+          this.isSending = false;
+        }
+      } catch (error) {
+        console.error(error);
+        this.$message.error('发送失败，请重试');
+        this.isSending = false;
+      }
     },
-    // 模拟 AI 回复
-    simulateAiResponse() {
-      // 先添加一个 loading 状态的消息
-      const loadingMsg = {
-        sender: 'ai',
-        loading: true,
-        content: '',
-        time: new Date()
-      };
-      this.messages.push(loadingMsg);
-      this.scrollToBottom();
-
-      // 模拟网络延迟
-      setTimeout(() => {
-        // 移除 loading 消息
-        this.messages.pop();
-
-        const responses = [
-          "这是一个很好的问题！根据我的分析，通常情况下我们需要考虑多个因素...",
-          "我明白了您的意思。在技术实现上，这可以通过以下几种方式来解决...",
-          "确实如此。除此之外，我们还需要注意性能优化的问题。",
-          "您提到的这一点非常关键！",
-          "抱歉，我需要更多上下文信息才能准确回答您的问题。"
-        ];
-
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-        this.messages.push({
-          sender: 'ai',
-          content: randomResponse,
-          time: new Date()
+    // 连接 SSE
+    async connectSSE(taskId) {
+      console.log('connectSSE', taskId);
+      try {
+        const url = `${config.VUE_APP_BASE_API}/chat/stream/${taskId}`;
+        const response = await fetch(url, {
+          headers: {
+            'token': getToken()
+          }
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        const aiMsg = this.messages[this.messages.length - 1];
+        aiMsg.loading = false;
+
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          
+          buffer += chunk;
+
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const data = line.slice(5).trim();
+              if (!data || data === '[DONE]') continue;
+
+              try {
+                // 尝试解析 JSON
+                const json = JSON.parse(data);
+                // 优先处理 aiAnswer
+                if (json.aiAnswer) {
+                  aiMsg.content += json.aiAnswer;
+                } else if (json.content) {
+                  // 兼容可能的 content 字段
+                  aiMsg.content += json.content;
+                } else {
+                  // 如果是其他结构，可能需要根据实际情况调整
+                  console.log('Unrecognized SSE data structure:', json);
+                }
+              } catch (e) {
+                // 非 JSON 直接追加，或者解析失败
+                console.warn('Parse SSE data error:', e);
+                // 只有在确实不是 JSON 时才直接追加 data，避免追加 undefined
+                // aiMsg.content += data; 
+              }
+            }
+          }
+          this.scrollToBottom();
+        }
+      } catch (error) {
+        console.error('SSE connection error:', error);
+        const aiMsg = this.messages[this.messages.length - 1];
+        aiMsg.content += '\n[连接中断]';
+      } finally {
         this.isSending = false;
-        this.scrollToBottom();
-      }, 1500);
+      }
     },
     // 滚动到底部
     scrollToBottom() {
@@ -182,6 +256,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.messages = [];
+        this.questionModel.sessionId = '';
         this.$message({
           type: 'success',
           message: '对话已清空'
