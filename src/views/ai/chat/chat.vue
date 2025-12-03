@@ -4,11 +4,8 @@
       <!-- 顶部标题栏 -->
       <el-header class="chat-header" height="60px">
         <div class="header-left">
-          <el-avatar 
-            :size="40" 
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-            class="header-avatar"
-          ></el-avatar>
+          <el-avatar :size="40" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+            class="header-avatar"></el-avatar>
           <div class="header-info">
             <h2 class="title">AI 智能助手</h2>
             <span class="status">
@@ -30,13 +27,10 @@
           <div class="message-time-divider">
             <span>{{ formatTime(new Date()) }}</span>
           </div>
-          
+
           <div class="message-item ai">
-            <el-avatar 
-              class="message-avatar" 
-              :size="36" 
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-            ></el-avatar>
+            <el-avatar class="message-avatar" :size="36"
+              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             <div class="message-content">
               <div class="message-bubble">
                 <p>您好！我是您的 AI 智能助手。有什么我可以帮您的吗？您可以问我任何问题。</p>
@@ -47,11 +41,8 @@
           <!-- 消息循环 -->
           <div v-for="(msg, index) in messages" :key="index" :class="['message-item', msg.sender]">
             <template v-if="msg.sender === 'ai'">
-              <el-avatar 
-                class="message-avatar" 
-                :size="36" 
-                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-              ></el-avatar>
+              <el-avatar class="message-avatar" :size="36"
+                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
               <div class="message-content">
                 <div class="message-bubble">
                   <div v-if="msg.loading" class="typing-indicator">
@@ -63,16 +54,12 @@
             </template>
 
             <template v-else>
+              <el-avatar class="message-avatar" :size="36" icon="el-icon-user-solid"></el-avatar>
               <div class="message-content">
                 <div class="message-bubble">
                   <div class="text">{{ msg.content }}</div>
                 </div>
               </div>
-              <el-avatar 
-                class="message-avatar" 
-                :size="36" 
-                icon="el-icon-user-solid"
-              ></el-avatar>
             </template>
           </div>
         </div>
@@ -81,25 +68,11 @@
       <!-- 底部输入区域 -->
       <el-footer class="chat-footer" height="auto">
         <div class="input-container">
-          <el-input
-            type="textarea"
-            :rows="1"
-            :autosize="{ minRows: 1, maxRows: 4 }"
-            placeholder="请输入您的问题... (Shift + Enter 换行)"
-            v-model="userInput"
-            resize="none"
-            class="chat-input"
-            @keydown.enter.native="handleEnter"
-          ></el-input>
-          <el-button 
-            type="primary" 
-            class="send-btn" 
-            :loading="isSending"
-            :disabled="!userInput.trim()"
-            @click="sendMessage"
-            icon="el-icon-s-promotion"
-            circle
-          ></el-button>
+          <el-input type="textarea" :rows="1" :autosize="{ minRows: 1, maxRows: 4 }"
+            placeholder="请输入您的问题... (Shift + Enter 换行)" v-model="userInput" resize="none" class="chat-input"
+            @keydown.enter.native="handleEnter"></el-input>
+          <el-button type="primary" class="send-btn" :loading="isSending" :disabled="!userInput.trim()"
+            @click="sendMessage" icon="el-icon-s-promotion" circle></el-button>
         </div>
       </el-footer>
     </el-container>
@@ -168,7 +141,7 @@ export default {
       setTimeout(() => {
         // 移除 loading 消息
         this.messages.pop();
-        
+
         const responses = [
           "这是一个很好的问题！根据我的分析，通常情况下我们需要考虑多个因素...",
           "我明白了您的意思。在技术实现上，这可以通过以下几种方式来解决...",
@@ -176,15 +149,15 @@ export default {
           "您提到的这一点非常关键！",
           "抱歉，我需要更多上下文信息才能准确回答您的问题。"
         ];
-        
+
         const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        
+
         this.messages.push({
           sender: 'ai',
           content: randomResponse,
           time: new Date()
         });
-        
+
         this.isSending = false;
         this.scrollToBottom();
       }, 1500);
@@ -213,7 +186,7 @@ export default {
           type: 'success',
           message: '对话已清空'
         });
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }
 }
@@ -224,30 +197,17 @@ export default {
 @import "@/assets/styles/variables.scss";
 
 .ai-chat-wrapper {
-  height: 100%;
+  height: calc(100vh - 50px); // 减去导航栏高度，确保铺满一屏
   width: 100%;
-  background-color: #f0f2f5;
-  display: flex;
-  justify-content: center;
-  
-  // 移动端适配
-  @media (max-width: 768px) {
-    background-color: #fff;
-  }
+  background-color: #fff;
+  overflow: hidden; // 防止外层滚动
 }
 
 .ai-chat-container {
   width: 100%;
-  max-width: 1000px; // 大屏限制最大宽度
   height: 100%;
   background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   position: relative;
-  
-  @media (max-width: 768px) {
-    box-shadow: none;
-    max-width: 100%;
-  }
 }
 
 .chat-header {
@@ -258,12 +218,12 @@ export default {
   justify-content: space-between;
   padding: 0 20px;
   z-index: 10;
-  
+
   .header-left {
     display: flex;
     align-items: center;
     gap: 12px;
-    
+
     .title {
       font-size: 18px;
       font-weight: 600;
@@ -271,14 +231,14 @@ export default {
       margin: 0;
       line-height: 1.2;
     }
-    
+
     .status {
       font-size: 12px;
       color: #67C23A;
       display: flex;
       align-items: center;
       gap: 4px;
-      
+
       .status-dot {
         width: 6px;
         height: 6px;
@@ -294,7 +254,7 @@ export default {
   overflow-y: auto;
   background-color: #f5f7fa;
   scroll-behavior: smooth;
-  
+
   .messages-list {
     padding: 20px;
     display: flex;
@@ -307,7 +267,7 @@ export default {
 .message-time-divider {
   text-align: center;
   margin: 10px 0;
-  
+
   span {
     background-color: rgba(0, 0, 0, 0.05);
     padding: 4px 12px;
@@ -323,40 +283,40 @@ export default {
   gap: 12px;
   max-width: 85%;
   animation: slideIn 0.3s ease-out;
-  
+
   &.ai {
     align-self: flex-start;
-    
+
     .message-bubble {
       background-color: #fff;
       color: #303133;
       border-top-left-radius: 2px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
   }
-  
+
   &.user {
     align-self: flex-end;
     flex-direction: row-reverse;
-    
+
     .message-bubble {
       background-color: $primary-color; // 使用项目主题色
       color: #fff;
       border-top-right-radius: 2px;
       box-shadow: 0 2px 4px rgba(64, 158, 255, 0.2);
-      
+
       .text {
         white-space: pre-wrap;
       }
     }
   }
-  
+
   .message-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .message-bubble {
     padding: 12px 16px;
     border-radius: 12px;
@@ -371,7 +331,7 @@ export default {
   background: #fff;
   border-top: 1px solid #ebeef5;
   padding: 16px 20px;
-  
+
   .input-container {
     display: flex;
     align-items: flex-end;
@@ -381,16 +341,16 @@ export default {
     padding: 8px 8px 8px 20px;
     transition: all 0.3s;
     border: 1px solid transparent;
-    
+
     &:focus-within {
       background-color: #fff;
       border-color: $primary-color;
       box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
     }
-    
+
     .chat-input {
       flex: 1;
-      
+
       ::v-deep .el-textarea__inner {
         background: transparent;
         border: none;
@@ -399,13 +359,13 @@ export default {
         resize: none;
         min-height: 24px !important;
         font-size: 14px;
-        
+
         &:focus {
           outline: none;
         }
       }
     }
-    
+
     .send-btn {
       flex-shrink: 0;
       width: 40px;
@@ -416,11 +376,11 @@ export default {
       justify-content: center;
       font-size: 18px;
       transition: transform 0.2s;
-      
+
       &:hover {
         transform: scale(1.05);
       }
-      
+
       &:active {
         transform: scale(0.95);
       }
@@ -434,22 +394,35 @@ export default {
   align-items: center;
   gap: 4px;
   padding: 4px 0;
-  
+
   span {
     width: 6px;
     height: 6px;
     background-color: #909399;
     border-radius: 50%;
     animation: bounce 1.4s infinite ease-in-out both;
-    
-    &:nth-child(1) { animation-delay: -0.32s; }
-    &:nth-child(2) { animation-delay: -0.16s; }
+
+    &:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.16s;
+    }
   }
 }
 
 @keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
 
 @keyframes slideIn {
@@ -457,6 +430,7 @@ export default {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -467,34 +441,34 @@ export default {
 @media (max-width: 768px) {
   .chat-header {
     padding: 0 12px;
-    
+
     .header-left .title {
       font-size: 16px;
     }
   }
-  
+
   .chat-main .messages-list {
     padding: 12px;
     gap: 16px;
   }
-  
+
   .message-item {
     max-width: 90%;
-    
+
     .message-bubble {
       padding: 10px 14px;
       font-size: 14px;
     }
-    
+
     .message-avatar {
       width: 32px;
       height: 32px;
     }
   }
-  
+
   .chat-footer {
     padding: 10px 12px;
-    
+
     .input-container {
       padding-left: 16px;
     }
