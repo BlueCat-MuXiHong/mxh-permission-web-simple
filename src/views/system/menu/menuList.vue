@@ -2,105 +2,60 @@
     <el-main>
         <div style="margin-bottom: 10px;">
             <!--  新增按钮  -->
-            <el-button
-                v-if="hasPermission('sys:menu:add')"
-                icon="el-icon-plus"
-                size="small"
-                type="success"
+            <el-button v-if="hasPermission('sys:menu:add')" icon="el-icon-plus" size="small" type="success"
                 @click="openAddWindow()">
                 新增
             </el-button>
         </div>
-        
+
         <!--  表格数据  -->
-        <el-table
-            v-loading="loading"
-            :data="tableData"
-            :height="tableHeight"
-            :tree-props="{children: 'children'}"
-            :class="{'el-table--mobile': isMobile}"
-            :header-cell-style="isMobile ? {padding: '5px 0'} : {}"
-            :size="isMobile ? 'mini' : 'medium'"
-            border
-            default-expand-all
-            row-key="id"
-            style="width: 100%;"
-        >
+        <el-table v-loading="loading" :data="tableData" :height="tableHeight" :tree-props="{ children: 'children' }"
+            :class="{ 'el-table--mobile': isMobile }" :header-cell-style="isMobile ? { padding: '5px 0' } : {}"
+            :size="isMobile ? 'mini' : 'medium'" border default-expand-all row-key="id" style="width: 100%;">
             <el-table-column label="菜单名称" prop="label"></el-table-column>
             <el-table-column align="center" label="菜单类型" prop="type">
                 <template slot-scope="scope">
-                    <el-tag v-if="scope.row.type===0" size="normal">目录</el-tag>
-                    <el-tag v-else-if="scope.row.type===1" size="normal" type="success">菜单</el-tag>
-                    <el-tag v-else-if="scope.row.type===2" size="normal" type="warning">按钮</el-tag>
+                    <el-tag v-if="scope.row.type === 0" size="normal">目录</el-tag>
+                    <el-tag v-else-if="scope.row.type === 1" size="normal" type="success">菜单</el-tag>
+                    <el-tag v-else-if="scope.row.type === 2" size="normal" type="warning">按钮</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column
-                :width="isMobile ? 80 : 'auto'"
-                align="center"
-                label="菜单图标"
-                prop="icon">
+            <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="菜单图标" prop="icon">
                 <template slot-scope="scope">
                     <!--     如果包含el-开头的用i标签，否则用svg-icon     -->
-                    <i v-if="scope.row.icon && scope.row.icon.includes('el-icon')" :class="scope.row.icon"/>
-                    <svg-icon v-else-if="scope.row.icon" :icon-class="scope.row.icon"/>
+                    <i v-if="scope.row.icon && scope.row.icon.includes('el-icon')" :class="scope.row.icon" />
+                    <svg-icon v-else-if="scope.row.icon" :icon-class="scope.row.icon" />
                     <span v-else>-</span>
                 </template>
             </el-table-column>
-            <el-table-column
-                v-if="!isMobile"
-                align="center"
-                label="路由编码"
-                prop="code"></el-table-column>
-            <el-table-column
-                v-if="!isMobile"
-                align="center"
-                label="路由地址"
-                prop="path"></el-table-column>
-            <el-table-column
-                v-if="!isMobile"
-                align="center"
-                label="组件路径"
-                prop="url"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="路由编码" prop="code"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="路由地址" prop="path"></el-table-column>
+            <el-table-column v-if="!isMobile" align="center" label="组件路径" prop="url"></el-table-column>
             <el-table-column :width="isMobile ? 80 : 'auto'" align="center" label="操作">
                 <template slot-scope="scope">
                     <!-- 桌面端显示按钮 -->
                     <template v-if="!isMobile">
                         <div class="operation-buttons">
-                            <el-button
-                                v-if="hasPermission('sys:menu:edit')"
-                                icon="el-icon-edit-outline"
-                                size="mini"
-                                type="primary"
-                                @click="handleEdit(scope.row)"
-                            >编辑
+                            <el-button v-if="hasPermission('sys:menu:edit')" icon="el-icon-edit-outline" size="mini"
+                                type="primary" @click="handleEdit(scope.row)">编辑
                             </el-button>
-                            <el-button
-                                v-if="hasPermission('sys:menu:delete')"
-                                icon="el-icon-delete-solid"
-                                size="mini"
-                                type="danger"
-                                @click="handleDelete(scope.row)"
-                            >删除
+                            <el-button v-if="hasPermission('sys:menu:delete')" icon="el-icon-delete-solid" size="mini"
+                                type="danger" @click="handleDelete(scope.row)">删除
                             </el-button>
                         </div>
                     </template>
-                    
                     <!-- 移动端显示下拉菜单 -->
                     <el-dropdown v-else trigger="click">
                         <el-button size="mini" type="primary">
                             操作<i class="el-icon-arrow-down el-icon--right"></i>
                         </el-button>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item
-                                v-if="hasPermission('sys:menu:edit')"
-                                @click.native="handleEdit(scope.row)"
-                            >
+                            <el-dropdown-item v-if="hasPermission('sys:menu:edit')"
+                                @click.native="handleEdit(scope.row)">
                                 <i class="el-icon-edit-outline"></i> 编辑
                             </el-dropdown-item>
-                            <el-dropdown-item
-                                v-if="hasPermission('sys:menu:delete')"
-                                @click.native="handleDelete(scope.row)"
-                            >
+                            <el-dropdown-item v-if="hasPermission('sys:menu:delete')"
+                                @click.native="handleDelete(scope.row)">
                                 <i class="el-icon-delete-solid"></i> 删除
                             </el-dropdown-item>
                         </el-dropdown-menu>
@@ -108,54 +63,40 @@
                 </template>
             </el-table-column>
         </el-table>
-        
+
         <!--  新增或修改窗口  -->
-        <system-dialog
-            v-dialog-drag
-            :height="dialogHeight"
-            :title="menuDialog.title"
-            :visible="menuDialog.visible"
-            :width="dialogWidth"
-            @onClose="onClose"
-            @onConfirm="onConfirm"
-        >
+        <system-dialog v-dialog-drag :height="dialogHeight" :title="menuDialog.title" :visible="menuDialog.visible"
+            :width="dialogWidth" @onClose="onClose" @onConfirm="onConfirm">
             <div slot="content">
-                <el-form ref="menuForm"
-                         :class="{'mobile-menu-form': isMobile}"
-                         :model="menu"
-                         :rules="rules"
-                         :inline="false"
-                         :label-position="isMobile ? 'top' : 'right'"
-                         :label-width="isMobile ? '70px' : '80px'"
-                         size="small"
-                >
-                    <el-col :span="24">
-                        <el-form-item label="菜单类型" prop="type">
-                            <el-radio-group v-model="menu.type">
-                                <el-radio :label="0">目录</el-radio>
-                                <el-radio :label="1">菜单</el-radio>
-                                <el-radio :label="2">按钮</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                    </el-col>
-                    
+
+                <el-form ref="menuForm" :class="{ 'mobile-menu-form': isMobile }" :model="menu" :rules="rules"
+                    :inline="false" :label-position="isMobile ? 'top' : 'right'"
+                    :label-width="isMobile ? '70px' : '80px'" size="small">
+                    <el-form-item label="菜单类型" prop="type">
+                        <el-radio-group v-model="menu.type">
+                            <el-radio :label="0">目录</el-radio>
+                            <el-radio :label="1">菜单</el-radio>
+                            <el-radio :label="2">按钮</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+
                     <el-form-item label="所属菜单" prop="parentName" size="small">
-                        <el-input v-model="menu.parentName" :readonly="true" @click.native="selectParentMenu"/>
+                        <el-input v-model="menu.parentName" :readonly="true" @click.native="selectParentMenu" />
                     </el-form-item>
                     <el-form-item label="菜单名称" prop="label" size="small">
                         <el-input v-model="menu.label"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="menu.type===1" label="路由地址" prop="path" size="small">
+                    <el-form-item v-if="menu.type === 1" label="路由地址" prop="path" size="small">
                         <el-input v-model="menu.path"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="menu.type===1" label="组件路径" prop="url" size="small">
+                    <el-form-item v-if="menu.type === 1" label="组件路径" prop="url" size="small">
                         <el-input v-model="menu.url"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="menu.type!==0" label="权限编码" prop="code" size="small">
+                    <el-form-item v-if="menu.type !== 0" label="权限编码" prop="code" size="small">
                         <el-input v-model="menu.code"></el-input>
                     </el-form-item>
                     <el-form-item label="菜单图标" size="small">
-                        <my-icon ref="child" @selectIcon="setIcon"/>
+                        <my-icon ref="child" @selectIcon="setIcon" />
                     </el-form-item>
                     <el-form-item label="菜单序号" size="small">
                         <el-input v-model="menu.orderNum"></el-input>
@@ -163,31 +104,15 @@
                 </el-form>
             </div>
         </system-dialog>
-        
+
         <!-- 选择所属菜单弹框 -->
-        <system-dialog
-            :height="parentDialog.height"
-            :title="parentDialog.title"
-            :visible="parentDialog.visible"
-            :width="dialogWidth"
-            @onClose="onParentClose"
-            @onConfirm="onParentConfirm"
-        >
+        <system-dialog :height="parentDialog.height" :title="parentDialog.title" :visible="parentDialog.visible"
+            :width="dialogWidth" @onClose="onParentClose" @onConfirm="onParentConfirm">
             <div slot="content">
-                <el-tree
-                    ref="parentTree"
-                    v-loading="selectMenuLoading"
-                    :data="parentMenuList"
-                    :expand-on-click-node="false"
-                    :highlight-current="true"
-                    :props="defaultProps"
-                    :show-checkbox="false"
-                    default-expand-all
-                    empty-text="暂无数据"
-                    node-key="id"
-                    style="font-size: 14px"
-                    @node-click="handleNodeClick"
-                >
+                <el-tree ref="parentTree" v-loading="selectMenuLoading" :data="parentMenuList"
+                    :expand-on-click-node="false" :highlight-current="true" :props="defaultProps" :show-checkbox="false"
+                    default-expand-all empty-text="暂无数据" node-key="id" style="font-size: 14px"
+                    @node-click="handleNodeClick">
                     <div slot-scope="{ node, data }" class="customer-tree-node">
                         <span style="margin-left: 3px">{{ node.label }}</span>
                     </div>
@@ -199,12 +124,12 @@
 
 <script>
 import SystemDialog from '@/components/Dialog/SystemDialog.vue'
-import {addPermission, deletePermission, getInitList, getPermissionList, updatePermission} from '@/api/menu'
+import { addPermission, deletePermission, getInitList, getPermissionList, updatePermission } from '@/api/menu'
 import MyIcon from '@/components/icon/MyIcon.vue'
 import hasPermission from '@/router/permission'
 
 export default {
-    components: {MyIcon, SystemDialog},
+    components: { MyIcon, SystemDialog },
     data() {
         return {
             isMobile: false, // 添加移动端检测标识
@@ -244,13 +169,13 @@ export default {
                 label: 'label'
             },
             rules: {
-                type: [{required: true, trigger: 'change', message: '请选择菜单类型'}],
-                parentName: [{required: true, trigger: 'change', message: '请选择所属菜单'}],
-                label: [{required: true, trigger: 'blur', message: '请输入菜单名称'}],
-                name: [{required: true, trigger: 'blur', message: '请输入路由名称'}],
-                path: [{required: true, trigger: 'blur', message: '请输入路由路径'}],
-                url: [{required: true, trigger: 'blur', message: '请输入组件路径'}],
-                code: [{required: true, trigger: 'blur', message: '请输入权限编码'}]
+                type: [{ required: true, trigger: 'change', message: '请选择菜单类型' }],
+                parentName: [{ required: true, trigger: 'change', message: '请选择所属菜单' }],
+                label: [{ required: true, trigger: 'blur', message: '请输入菜单名称' }],
+                name: [{ required: true, trigger: 'blur', message: '请输入路由名称' }],
+                path: [{ required: true, trigger: 'blur', message: '请输入路由路径' }],
+                url: [{ required: true, trigger: 'blur', message: '请输入组件路径' }],
+                code: [{ required: true, trigger: 'blur', message: '请输入权限编码' }]
             },
             resizeFlag: null // 用于防抖resize事件
         }
@@ -329,7 +254,7 @@ export default {
             let confirm = await this.$myConfirm(`确定删除菜单【${row.label}】吗？`)
             if (confirm) {
                 //发送删除请求
-                let res = await deletePermission({id: row.id})
+                let res = await deletePermission({ id: row.id })
                 //判断是否成功
                 if (res.code === 200) {
                     this.$message.success(res.message)
@@ -429,7 +354,7 @@ export default {
          */
         getTableHeight() {
             let offset = 0;
-            
+
             // 移动端下，考虑偏移量
             if (this.isMobile) {
                 offset = 200; // 减小移动端的偏移量，使表格更贴近底部
@@ -437,10 +362,10 @@ export default {
                 // 桌面端的偏移量
                 offset = 120; // 减小桌面端的偏移量
             }
-            
+
             // 计算表格高度
             let tableHeight = window.innerHeight - offset;
-            
+
             // 设置最小高度，同时设置最大高度以避免滚动条
             this.tableHeight = Math.min(Math.max(tableHeight, 250), window.innerHeight - 200);
         }
@@ -450,7 +375,7 @@ export default {
          * 初始检测设备类型
          */
         this.checkDevice()
-        
+
         /**
          * 挂载window.onresize事件(动态设置table高度和检测设备类型)
          */
@@ -477,27 +402,27 @@ export default {
 /* 表格样式优化 */
 ::v-deep .el-table {
     font-size: 14px;
-    
+
     .cell {
         padding: 8px 5px;
     }
-    
+
     &.el-table--mobile {
         font-size: 12px;
-        
+
         th {
             padding: 5px 0;
         }
-        
+
         .el-table__body td {
             padding: 5px 0;
         }
-        
+
         .el-button--mini {
             padding: 5px 8px;
             font-size: 11px;
         }
-        
+
         .el-button.is-circle {
             padding: 7px;
         }
@@ -519,15 +444,15 @@ export default {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
-    
+
     .el-button {
         margin: 0 2px;
         padding: 5px 8px;
-        
+
         &:first-child {
             margin-left: 0;
         }
-        
+
         &:last-child {
             margin-right: 0;
         }
@@ -538,13 +463,13 @@ export default {
 ::v-deep .el-pagination {
     white-space: normal;
     padding: 5px 0;
-    
+
     &.is-background .btn-next,
     &.is-background .btn-prev,
     &.is-background .el-pager li {
         margin: 0 3px;
     }
-    
+
     .el-pagination__total {
         display: inline-block;
         margin-bottom: 5px;
@@ -555,7 +480,7 @@ export default {
 @media screen and (max-width: 1200px) {
     .operation-buttons {
         flex-direction: column;
-        
+
         .el-button {
             margin: 2px 0;
             width: 100%;
@@ -576,16 +501,16 @@ export default {
 .mobile-menu-form {
     ::v-deep .el-form-item {
         margin-bottom: 15px;
-        
+
         .el-form-item__label {
             padding-bottom: 5px;
             line-height: 1.2;
         }
-        
+
         .el-form-item__content {
             line-height: 1.2;
         }
-        
+
         .el-input {
             width: 100%;
         }

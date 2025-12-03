@@ -112,7 +112,7 @@
                 prop="createTime">
                 <template v-slot="scope">
                     <el-button
-                        :disabled="scope.row.roleCode==='ADMIN_ROOT' || !hasPermission('sys:role:assign')"
+                        :disabled="scope.row.roleCode==='ADMIN_ROOT1' || !hasPermission('sys:role:assign')"
                         icon="el-icon-setting"
                         round
                         size="small"
