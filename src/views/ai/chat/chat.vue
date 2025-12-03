@@ -83,6 +83,20 @@
 import { ask } from '../../../api/ai';
 import { getToken } from '@/utils/auth';
 import config from '@/config';
+import { marked } from 'marked';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // 引入代码高亮样式
+
+// 配置 marked
+marked.setOptions({
+  highlight: function (code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(code, { language: lang }).value;
+    }
+    return hljs.highlightAuto(code).value;
+  },
+  breaks: true // 支持 GitHub 风格的换行符
+});
 
 export default {
   name: 'AiChat',
@@ -104,10 +118,15 @@ export default {
     formatTime(date) {
       return new Date(date).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
     },
-    // 简单的文本格式化（实际项目中可替换为 markdown 解析器）
+    // 格式化内容（使用 marked 解析 markdown）
     formatContent(content) {
       if (!content) return '';
-      return content.replace(/\n/g, '<br>');
+      try {
+        return marked.parse(content);
+      } catch (error) {
+        console.error('Markdown parse error:', error);
+        return content;
+      }
     },
     // 处理回车键
     handleEnter(e) {
@@ -509,6 +528,114 @@ export default {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// Markdown 样式
+::v-deep .markdown-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #24292e;
+
+  p {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  pre {
+    background-color: #f6f8fa;
+    padding: 16px;
+    border-radius: 6px;
+    overflow: auto;
+    margin-bottom: 10px;
+    line-height: 1.45;
+  }
+
+  code {
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    background-color: rgba(27, 31, 35, 0.05);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 85%;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+  }
+
+  ul,
+  ol {
+    padding-left: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
+  blockquote {
+    margin: 0 0 10px;
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1,
+  h2 {
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #eaecef;
+  }
+
+  a {
+    color: #0366d6;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    width: 100%;
+    overflow: auto;
+    display: block;
+
+    th,
+    td {
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+    }
+
+    tr {
+      background-color: #fff;
+      border-top: 1px solid #c6cbd1;
+    }
+
+    tr:nth-child(2n) {
+      background-color: #f6f8fa;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    box-sizing: content-box;
+    background-color: #fff;
   }
 }
 
