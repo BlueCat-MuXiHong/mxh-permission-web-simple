@@ -45,7 +45,7 @@ module.exports = {
             config.plugins.push(
                 new webpack.DefinePlugin({
                     'window.SYSTEM_CONFIG': JSON.stringify({
-                        VUE_APP_BASE_API: 'http://localhost:6060/api',
+                        VUE_APP_BASE_API: 'http://localhost:10081/api',
                         VUE_APP_SYSTEM_NAME: '权限管理系统',
                         VUE_APP_TITLE: '权限管理系统',
                         VUE_APP_ENABLE_LOG: false

@@ -7,7 +7,7 @@
 // 默认配置
 const defaultConfig = {
   // 后端API地址
-  VUE_APP_BASE_API: 'http://localhost:6060/api',
+  VUE_APP_BASE_API: 'http://localhost:10081/api',
   // 系统名称
   VUE_APP_SYSTEM_NAME: '权限管理系统',
   // 系统标题

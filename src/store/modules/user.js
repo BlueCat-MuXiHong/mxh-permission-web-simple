@@ -1,6 +1,6 @@
-import {getToken, removeToken, setToken} from "@/utils/auth";
-import {getUserInfo, login, logout} from "@/api/user";
-import {resetRouter} from "@/router";
+import { getToken, removeToken, setToken } from "@/utils/auth";
+import { getUserInfo, login, logout } from "@/api/user";
+import { resetRouter } from "@/router";
 
 /**
  * 默认状态
@@ -81,11 +81,11 @@ const actions = {
      * @param {Object} userInfo - 登录表单数据
      * @returns {Promise} 登录结果的Promise
      */
-    login({commit}, userInfo) {
+    login({ commit }, userInfo) {
         return new Promise((resolve, reject) => {
             // 发送登录请求
             login(userInfo).then(res => {
-                const {token} = res.data
+                const { token } = res.data
                 commit('SET_TOKEN', token)
                 setToken(token)
                 resolve()
@@ -93,12 +93,13 @@ const actions = {
                 reject(error)
             })
         })
-    }, /**
+    }, 
+    /**
      * 用户登出操作
      * @param {Object} context - 包含commit、state等的上下文对象
      * @returns {Promise} 登出的Promise
      */
-    logout({commit, state}) {
+    logout({ commit, state }) {
         return new Promise((resolve, reject) => {
             logout(state.token).then(() => {
                 commit('RESET_STATE')
@@ -109,15 +110,16 @@ const actions = {
                 reject(error)
             })
         })
-    }, /**
+    }, 
+    /**
      * 获取用户信息
      * @param commit - 提交mutations
      * @param state - 状态对象
      */
-    getUserInfo({commit, state}) {
+    getUserInfo({ commit, state }) {
         return new Promise((resolve, reject) => {
             getUserInfo(state.token).then(res => {
-                const {id, name, avatar, roles} = res.data
+                const { id, name, avatar, roles } = res.data
                 commit('SET_NAME', name)
                 commit('SET_AVATAR', avatar)
                 commit('SET_ROLES', roles)
@@ -127,7 +129,20 @@ const actions = {
                 reject(error)
             })
         })
+    },
+    /**
+     * 重置token
+     * @param {*} param0  上下文对象
+     * @returns  重置token的Promise
+     */
+    resetToken({ commit }) {
+        return new Promise(resolve => {
+            removeToken() // must remove  token  first
+            commit('RESET_STATE')
+            resolve()
+        })
     }
+
 }
 
 // 导出用户模块
