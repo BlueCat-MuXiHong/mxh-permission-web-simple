@@ -29,8 +29,7 @@
           </div>
 
           <div class="message-item ai">
-            <el-avatar class="message-avatar" :size="36"
-              src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <el-avatar class="message-avatar" :size="36" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
             <div class="message-content">
               <div class="message-bubble">
                 <p>您好！我是您的 AI 智能助手。有什么我可以帮您的吗？您可以问我任何问题。</p>
@@ -41,8 +40,7 @@
           <!-- 消息循环 -->
           <div v-for="(msg, index) in messages" :key="index" :class="['message-item', msg.sender]">
             <template v-if="msg.sender === 'ai'">
-              <el-avatar class="message-avatar" :size="36"
-                src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+              <el-avatar class="message-avatar" :size="36" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
               <div class="message-content">
                 <div class="message-bubble">
                   <div v-if="msg.loading" class="typing-indicator">
@@ -54,7 +52,7 @@
             </template>
 
             <template v-else>
-              <el-avatar class="message-avatar" :size="36" icon="el-icon-user-solid"></el-avatar>
+              <el-avatar class="message-avatar" :size="36" icon="el-icon-user-solid" :src="avatar+'?imageView2/1/w/80/h/80'"></el-avatar>
               <div class="message-content">
                 <div class="message-bubble">
                   <div class="text">{{ msg.content }}</div>
@@ -86,7 +84,7 @@ import config from '@/config';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css'; // 引入代码高亮样式
-
+import {mapGetters} from 'vuex'
 // 配置 marked
 marked.setOptions({
   highlight: function (code, lang) {
@@ -100,13 +98,19 @@ marked.setOptions({
 
 export default {
   name: 'AiChat',
+  computed: {
+        ...mapGetters([
+            'avatar'
+        ])
+    },
   data() {
     return {
       questionModel: {
         sessionId: '',
-        modelCode: 'deepseek',
+        modelCode: 'qwen3-max',
+        shortName: 'qwen',
         question: '',
-        stream: true
+        stream: true 
       },
       taskId: '',
       isSending: false,
