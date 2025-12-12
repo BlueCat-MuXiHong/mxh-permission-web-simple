@@ -4,7 +4,9 @@
 // 配置对象
 window.SYSTEM_CONFIG = {
   // 后端API地址
-  VUE_APP_BASE_API: 'http://localhost:10081/api',
+  // VUE_APP_BASE_API: 'http://88.88.88.237:10081/api', // 公司内网
+  // VUE_APP_BASE_API: 'http://127.0.0.1:10081/api',  //本地
+  VUE_APP_BASE_API: 'https://frp-dry.com:46984/api',  //内网穿透
   // 系统名称
   VUE_APP_SYSTEM_NAME: '权限管理系统',
   // 系统标题

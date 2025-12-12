@@ -78,10 +78,10 @@
 </template>
 
 <script>
-import { ask } from '../../../api/ai';
-import { getToken } from '@/utils/auth';
+import {ask} from '../../../api/ai';
+import {getToken} from '@/utils/auth';
 import config from '@/config';
-import { marked } from 'marked';
+import {marked} from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css'; // 引入代码高亮样式
 import {mapGetters} from 'vuex'
@@ -107,7 +107,7 @@ export default {
     return {
       questionModel: {
         sessionId: '',
-        modelCode: 'qwen3-max',
+          modelCode: 'qwen-plus',
         shortName: 'qwen',
         question: '',
         stream: true 
