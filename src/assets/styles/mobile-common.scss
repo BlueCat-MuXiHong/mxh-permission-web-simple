@@ -1,0 +1,454 @@
+/**
+ * 移动端公共样式
+ * 用于统一 system 目录下所有页面的移动端布局和样式
+ */
+
+// ==================== 变量定义 ====================
+$primary-color: #409EFF;
+$success-color: #67C23A;
+$warning-color: #E6A23C;
+$danger-color: #F56C6C;
+$info-color: #909399;
+$border-color: #EBEEF5;
+$bg-color: #F5F7FA;
+$text-color: #303133;
+$text-secondary: #606266;
+$shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+$radius: 8px;
+
+// ==================== 搜索容器 ====================
+.search-container {
+    position: relative;
+    margin-bottom: 15px;
+    
+    &.is-mobile {
+        margin-bottom: 12px;
+    }
+}
+
+// ==================== 折叠面板标题 ====================
+.collapse-title-container {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 14px;
+    color: $text-color;
+    
+    .search-icon {
+        margin-right: 8px;
+        font-size: 16px;
+        color: $primary-color;
+    }
+    
+    .search-status-tag {
+        margin-left: 10px;
+        font-size: 12px;
+    }
+}
+
+// ==================== 移动端搜索折叠面板 ====================
+.mobile-search-collapse {
+    margin-bottom: 12px;
+    border-radius: $radius;
+    overflow: hidden;
+    box-shadow: $shadow-light;
+    border: 1px solid $border-color;
+    background: #fff;
+    
+    ::v-deep .el-collapse-item__wrap {
+        transition: height 0.3s ease;
+        will-change: height;
+        overflow: hidden;
+    }
+    
+    ::v-deep .el-collapse-item__header {
+        padding: 0 16px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 14px;
+        background: #fff;
+        border-bottom: none;
+        transition: background-color 0.2s;
+        
+        &:hover {
+            background-color: $bg-color;
+        }
+        
+        &.is-active {
+            border-bottom: 1px solid $border-color;
+        }
+    }
+    
+    ::v-deep .el-collapse-item__content {
+        padding: 16px;
+        padding-bottom: 8px;
+        background-color: #FAFBFC;
+    }
+    
+    ::v-deep .el-collapse-item__arrow {
+        transition: transform 0.3s ease;
+        margin-right: 8px;
+        color: $info-color;
+    }
+}
+
+// ==================== 移动端搜索表单 ====================
+.mobile-search-form {
+    .el-form-item {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 14px;
+        
+        ::v-deep .el-form-item__label {
+            font-size: 13px;
+            color: $text-secondary;
+            padding-bottom: 6px;
+            line-height: 1;
+        }
+        
+        ::v-deep .el-input,
+        ::v-deep .el-select {
+            width: 100%;
+        }
+        
+        ::v-deep .el-input__inner {
+            height: 38px;
+            line-height: 38px;
+            border-radius: 6px;
+        }
+    }
+    
+    // 按钮组容器
+    .mobile-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 8px -4px 0;
+        
+        ::v-deep .el-form-item__content {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        
+        .el-button {
+            flex: 1 1 auto;
+            min-width: calc(50% - 8px);
+            margin: 4px !important;
+            height: 38px;
+            font-size: 14px;
+            border-radius: 6px;
+            
+            &.el-button--small {
+                padding: 10px 16px;
+            }
+            
+            // 主要按钮样式增强
+            &.el-button--primary {
+                background: linear-gradient(135deg, #409EFF 0%, #66B1FF 100%);
+                border: none;
+                box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
+            }
+            
+            &.el-button--success {
+                background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
+                border: none;
+                box-shadow: 0 2px 6px rgba(103, 194, 58, 0.3);
+            }
+            
+            &.el-button--warning {
+                background: linear-gradient(135deg, #E6A23C 0%, #EEBC6D 100%);
+                border: none;
+                box-shadow: 0 2px 6px rgba(230, 162, 60, 0.3);
+            }
+            
+            &.el-button--default {
+                background: #fff;
+                border: 1px solid #DCDFE6;
+                color: $text-secondary;
+            }
+        }
+        
+        .el-dropdown {
+            flex: 1 1 auto;
+            min-width: calc(50% - 8px);
+            margin: 4px;
+            
+            .el-button {
+                width: 100%;
+                margin: 0 !important;
+            }
+        }
+    }
+}
+
+// ==================== 移动端表格 ====================
+::v-deep .el-table {
+    &.el-table--mobile {
+        font-size: 13px;
+        box-shadow: $shadow-light;
+        border-radius: $radius;
+        overflow: hidden;
+        border: 1px solid $border-color;
+        
+        // 表头样式
+        th {
+            padding: 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #FAFBFC !important;
+            color: $text-color;
+            
+            .cell {
+                padding: 0 10px;
+            }
+        }
+        
+        // 单元格样式
+        td {
+            padding: 10px 0;
+            
+            .cell {
+                padding: 0 10px;
+                line-height: 1.5;
+            }
+        }
+        
+        // 斑马纹
+        .el-table__row--striped td {
+            background-color: #FAFBFC !important;
+        }
+        
+        // 按钮样式
+        .el-button--mini {
+            padding: 7px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+        
+        .el-button.is-circle {
+            padding: 7px;
+        }
+        
+        // 下拉选择框
+        .el-select {
+            width: 100%;
+            
+            .el-input__inner {
+                font-size: 12px;
+                height: 32px;
+                line-height: 32px;
+            }
+        }
+        
+        // 开关
+        .el-switch {
+            height: 22px;
+            line-height: 22px;
+        }
+    }
+}
+
+// ==================== 操作按钮组 ====================
+.operation-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 6px;
+    
+    .el-button {
+        margin: 0;
+        padding: 7px 12px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .operation-buttons {
+        flex-direction: column;
+        gap: 6px;
+        
+        .el-button {
+            width: 100%;
+        }
+    }
+}
+
+// ==================== 移动端分页 ====================
+::v-deep .el-pagination {
+    padding: 12px 0;
+    
+    &.is-background {
+        .btn-next,
+        .btn-prev,
+        .el-pager li {
+            margin: 0 3px;
+            min-width: 30px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+    }
+    
+    .el-pagination__total {
+        font-size: 13px;
+        margin-right: 10px;
+        color: $text-secondary;
+    }
+    
+    .el-pagination__jump {
+        font-size: 13px;
+        
+        .el-input__inner {
+            height: 30px;
+        }
+    }
+}
+
+// ==================== 移动端对话框表单 ====================
+.mobile-form {
+    ::v-deep .el-form-item {
+        margin-bottom: 18px;
+        
+        .el-form-item__label {
+            padding-bottom: 8px;
+            line-height: 1;
+            font-size: 14px;
+            color: $text-secondary;
+        }
+        
+        .el-form-item__content {
+            line-height: 1;
+        }
+        
+        .el-input,
+        .el-select,
+        .el-cascader {
+            width: 100%;
+        }
+        
+        .el-input__inner {
+            height: 38px;
+            line-height: 38px;
+            border-radius: 6px;
+        }
+        
+        .el-textarea__inner {
+            min-height: 80px;
+            border-radius: 6px;
+        }
+    }
+}
+
+// 各页面表单的移动端样式别名
+.mobile-department-form,
+.mobile-company-form,
+.mobile-menu-form,
+.mobile-role-form,
+.mobile-user-form {
+    @extend .mobile-form;
+}
+
+// ==================== 移动端上传组件 ====================
+.upload-container {
+    display: flex;
+    align-items: center;
+    
+    &.mobile-upload-container {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        .upload-tip {
+            margin-top: 10px;
+            color: $info-color;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+    }
+}
+
+.avatar-uploader {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #DCDFE6;
+    border-radius: $radius;
+    overflow: hidden;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #FAFBFC;
+    
+    &:hover {
+        border-color: $primary-color;
+        background: #ECF5FF;
+    }
+    
+    .avatar-uploader-icon {
+        font-size: 32px;
+        color: #C0C4CC;
+    }
+}
+
+// ==================== 移动端部门树 ====================
+.mobile-dept-tree {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: #fff;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.mobile-dept-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    
+    .el-input {
+        flex: 1;
+    }
+}
+
+// ==================== 响应式断点 ====================
+@media screen and (max-width: 768px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+    
+    .el-main {
+        padding: 12px;
+    }
+    
+    .el-card__body {
+        padding: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .mobile-search-form .mobile-button-group {
+        .el-button {
+            min-width: calc(50% - 8px);
+            font-size: 13px;
+        }
+        
+        .el-dropdown {
+            min-width: calc(50% - 8px);
+        }
+    }
+    
+    ::v-deep .el-pagination {
+        &.is-background {
+            .btn-next,
+            .btn-prev,
+            .el-pager li {
+                min-width: 26px;
+                height: 26px;
+                line-height: 26px;
+            }
+        }
+    }
+}

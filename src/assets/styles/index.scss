@@ -32,5 +32,13 @@
 // 包含可重用的SCSS混合器和函数
 @import "mixin";
 
+// 导入移动端公共样式
+// 用于统一 system 目录下所有页面的移动端布局和样式
+@import "mobile-common";
+
+// 导入System模块公共样式
+// 用于统一 system 目录下所有页面的PC端布局和样式
+@import "system-common";
+
 // 在这里可以导入其他样式文件
 // 例如：页面特定样式、自定义组件样式等

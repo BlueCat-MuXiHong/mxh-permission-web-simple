@@ -20,21 +20,20 @@
                         <el-form-item label="单位电话">
                             <el-input v-model="searchModel.phone" clearable placeholder="请输入单位电话"></el-input>
                         </el-form-item>
-                        <el-form-item class="mobile-button-group">
+                        <div class="mobile-button-group">
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
+                                       type="primary" @click="search">查询
+                            </el-button>
+                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
+                                       size="small" @click="resetValue">重置
+                            </el-button>
                             <el-button v-if="hasPermission('sys:company:add')"
                                        icon="el-icon-plus"
                                        size="small"
                                        type="success"
                                        @click="openAddWindow">新增
                             </el-button>
-                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-refresh-right"
-                                       size="small" @click="resetValue">
-                                重置
-                            </el-button>
-                            <el-button v-if="hasPermission('sys:company:check')" icon="el-icon-search" size="small"
-                                       type="primary" @click="search">查询
-                            </el-button>
-                        </el-form-item>
+                        </div>
                     </el-form>
                 </el-collapse-item>
             </el-collapse>
@@ -493,274 +492,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 表格样式优化 */
-::v-deep .el-table {
-    font-size: 14px;
-    
-    .cell {
-        padding: 8px 5px;
-    }
-    
-    &.el-table--mobile {
-        font-size: 12px;
-        
-        th {
-            padding: 5px 0;
-        }
-        
-        .el-table__body td {
-            padding: 5px 0;
-        }
-        
-        .el-button--mini {
-            padding: 5px 8px;
-            font-size: 11px;
-        }
-        
-        .el-button.is-circle {
-            padding: 7px;
-        }
-    }
-}
-
-/* 移动端表格阴影效果 */
-::v-deep .el-table {
-    &.el-table--mobile {
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid #ebeef5;
-    }
-}
-
-/* 操作按钮样式优化 */
-.operation-buttons {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    
-    .el-button {
-        margin: 0 2px;
-        padding: 5px 8px;
-        
-        &:first-child {
-            margin-left: 0;
-        }
-        
-        &:last-child {
-            margin-right: 0;
-        }
-    }
-}
-
-/* 分页组件样式 */
-::v-deep .el-pagination {
-    white-space: normal;
-    padding: 5px 0;
-    
-    &.is-background .btn-next,
-    &.is-background .btn-prev,
-    &.is-background .el-pager li {
-        margin: 0 3px;
-    }
-    
-    .el-pagination__total {
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-}
-
-/* 响应式优化 - 针对中等屏幕 */
-@media screen and (max-width: 1200px) {
-    .operation-buttons {
-        flex-direction: column;
-        
-        .el-button {
-            margin: 2px 0;
-            width: 100%;
-        }
-    }
-}
-
-/* 搜索容器样式 */
-.search-container {
-    position: relative;
-    margin-bottom: 15px;
-    
-    &.is-mobile {
-        margin-bottom: 20px;
-    }
-}
-
-/* 移动端样式 */
-.collapse-title-container {
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    margin-right: 8px;
-    color: #409EFF;
-}
-
-.search-status-tag {
-    margin-left: 10px;
-    font-size: 12px;
-}
-
-.mobile-search-collapse {
-    margin-bottom: 15px;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid #ebeef5;
-    
-    /* 确保动画效果 */
-    ::v-deep .el-collapse-item__wrap {
-        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: height;
-        overflow: hidden;
-    }
-    
-    ::v-deep .el-collapse-item__header {
-        padding: 0 15px;
-        font-size: 14px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        
-        &:hover {
-            background-color: #f5f7fa;
-        }
-        
-        .collapse-summary {
-            font-size: 12px;
-            color: #909399;
-            margin-top: 5px;
-            margin-left: 26px;
-            padding: 5px 10px;
-            background-color: #f5f7fa;
-            border-radius: 4px;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-        }
-    }
-    
-    ::v-deep .el-collapse-item__content {
-        padding: 10px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #fafafa;
-    }
-    
-    /* 添加箭头旋转动画 */
-    ::v-deep .el-collapse-item__arrow {
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-right: 8px;
-        
-        &.el-collapse-item__arrow--active {
-            transform: rotate(90deg);
-        }
-    }
-}
-
-/* 移动端搜索表单样式 */
-.mobile-search-form {
-    .el-form-item {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 15px;
-        
-        .el-input {
-            width: 100%;
-        }
-    }
-    
-    .mobile-button-group {
-        display: flex;
-        justify-content: space-between;
-        
-        .el-button {
-            flex: 1;
-            margin: 0 5px;
-            
-            &:first-child {
-                margin-left: 0;
-            }
-            
-            &:last-child {
-                margin-right: 0;
-            }
-        }
-    }
-}
-
-/* 移动端新增按钮样式 */
-.mobile-add-button {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 100;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
 /* 公司表单样式 */
 .company-form {
     padding: 0 10px;
-}
-
-/* 移动端公司表单样式 */
-.mobile-company-form {
-    ::v-deep .el-form-item {
-        margin-bottom: 15px;
-        
-        .el-form-item__label {
-            padding-bottom: 5px;
-            line-height: 1.2;
-        }
-        
-        .el-form-item__content {
-            line-height: 1.2;
-        }
-        
-        .el-input {
-            width: 100%;
-        }
-    }
-}
-
-/* 上传容器样式 */
-.upload-container {
-    display: flex;
-    align-items: center;
-    
-    &.mobile-upload-container {
-        flex-direction: column;
-        align-items: flex-start;
-        
-        .upload-tip {
-            margin-top: 10px;
-            color: #909399;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-    }
-}
-
-.avatar-uploader {
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    overflow: hidden;
-    
-    &:hover {
-        border-color: #409EFF;
-    }
 }
 
 .el-upload {
@@ -769,15 +503,6 @@ export default {
     cursor: pointer;
     position: relative;
     overflow: hidden;
-}
-
-.avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
 }
 
 .avatar {

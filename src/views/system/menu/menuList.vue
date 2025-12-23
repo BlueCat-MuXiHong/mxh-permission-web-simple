@@ -399,95 +399,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 表格样式优化 */
-::v-deep .el-table {
-    font-size: 14px;
-
-    .cell {
-        padding: 8px 5px;
-    }
-
-    &.el-table--mobile {
-        font-size: 12px;
-
-        th {
-            padding: 5px 0;
-        }
-
-        .el-table__body td {
-            padding: 5px 0;
-        }
-
-        .el-button--mini {
-            padding: 5px 8px;
-            font-size: 11px;
-        }
-
-        .el-button.is-circle {
-            padding: 7px;
-        }
-    }
-}
-
-/* 移动端表格阴影效果 */
-::v-deep .el-table {
-    &.el-table--mobile {
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid #ebeef5;
-    }
-}
-
-/* 操作按钮样式优化 */
-.operation-buttons {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-
-    .el-button {
-        margin: 0 2px;
-        padding: 5px 8px;
-
-        &:first-child {
-            margin-left: 0;
-        }
-
-        &:last-child {
-            margin-right: 0;
-        }
-    }
-}
-
-/* 分页组件样式 */
-::v-deep .el-pagination {
-    white-space: normal;
-    padding: 5px 0;
-
-    &.is-background .btn-next,
-    &.is-background .btn-prev,
-    &.is-background .el-pager li {
-        margin: 0 3px;
-    }
-
-    .el-pagination__total {
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-}
-
-/* 响应式优化 - 针对中等屏幕 */
-@media screen and (max-width: 1200px) {
-    .operation-buttons {
-        flex-direction: column;
-
-        .el-button {
-            margin: 2px 0;
-            width: 100%;
-        }
-    }
-}
-
 /* 移动端新增按钮样式 */
 .mobile-add-button {
     position: fixed;
@@ -495,25 +406,5 @@ export default {
     bottom: 20px;
     z-index: 100;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-/* 移动端菜单表单样式 */
-.mobile-menu-form {
-    ::v-deep .el-form-item {
-        margin-bottom: 15px;
-
-        .el-form-item__label {
-            padding-bottom: 5px;
-            line-height: 1.2;
-        }
-
-        .el-form-item__content {
-            line-height: 1.2;
-        }
-
-        .el-input {
-            width: 100%;
-        }
-    }
 }
 </style>

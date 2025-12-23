@@ -1,0 +1,570 @@
+/**
+ * System 模块公共样式
+ * 用于统一 system 目录下所有页面的PC端布局和样式
+ */
+
+// ==================== 变量定义 ====================
+$primary-color: #409EFF;
+$success-color: #67C23A;
+$warning-color: #E6A23C;
+$danger-color: #F56C6C;
+$info-color: #909399;
+$border-color: #EBEEF5;
+$border-light: #E4E7ED;
+$bg-color: #F5F7FA;
+$bg-light: #FAFBFC;
+$text-color: #303133;
+$text-regular: #606266;
+$text-secondary: #909399;
+$shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+$shadow-hover: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+$radius: 8px;
+$radius-small: 4px;
+$transition: all 0.3s ease;
+
+// ==================== 搜索区域 ====================
+.search-container {
+    margin-bottom: 16px;
+    
+    .el-form {
+        .el-form-item {
+            margin-bottom: 0;
+            margin-right: 12px;
+            
+            .el-input {
+                width: 200px;
+                
+                .el-input__inner {
+                    border-radius: $radius-small;
+                    transition: $transition;
+                    
+                    &:hover {
+                        border-color: $primary-color;
+                    }
+                    
+                    &:focus {
+                        border-color: $primary-color;
+                        box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+                    }
+                }
+            }
+            
+            .el-select {
+                width: 200px;
+            }
+        }
+        
+        .el-button {
+            border-radius: $radius-small;
+            transition: $transition;
+            
+            &.el-button--primary {
+                background: linear-gradient(135deg, #409EFF 0%, #66B1FF 100%);
+                border: none;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #66B1FF 0%, #409EFF 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+                }
+            }
+            
+            &.el-button--success {
+                background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
+                border: none;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #85CE61 0%, #67C23A 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(103, 194, 58, 0.4);
+                }
+            }
+            
+            &.el-button--warning {
+                background: linear-gradient(135deg, #E6A23C 0%, #EEBC6D 100%);
+                border: none;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #EEBC6D 0%, #E6A23C 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(230, 162, 60, 0.4);
+                }
+            }
+            
+            &.el-button--danger {
+                background: linear-gradient(135deg, #F56C6C 0%, #F89898 100%);
+                border: none;
+                
+                &:hover {
+                    background: linear-gradient(135deg, #F89898 0%, #F56C6C 100%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(245, 108, 108, 0.4);
+                }
+            }
+            
+            &.el-button--default {
+                border: 1px solid $border-light;
+                
+                &:hover {
+                    color: $primary-color;
+                    border-color: $primary-color;
+                    background-color: #ECF5FF;
+                }
+            }
+        }
+    }
+}
+
+// ==================== 表格样式 ====================
+::v-deep .el-table {
+    border-radius: $radius;
+    overflow: hidden;
+    box-shadow: $shadow;
+    
+    &::before {
+        display: none;
+    }
+    
+    // 表头
+    th.el-table__cell {
+        background-color: $bg-light !important;
+        color: $text-color;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid $border-color;
+        
+        .cell {
+            padding: 0 16px;
+        }
+    }
+    
+    // 单元格
+    td.el-table__cell {
+        padding: 14px 0;
+        color: $text-regular;
+        font-size: 14px;
+        border-bottom: 1px solid $border-color;
+        
+        .cell {
+            padding: 0 16px;
+        }
+    }
+    
+    // 斑马纹
+    .el-table__row--striped td.el-table__cell {
+        background-color: $bg-light !important;
+    }
+    
+    // 悬停效果
+    .el-table__body tr:hover > td.el-table__cell {
+        background-color: #ECF5FF !important;
+    }
+    
+    // 表格内按钮
+    .el-button--mini {
+        padding: 7px 12px;
+        font-size: 12px;
+        border-radius: $radius-small;
+        
+        &.el-button--primary {
+            background: linear-gradient(135deg, #409EFF 0%, #66B1FF 100%);
+            border: none;
+        }
+        
+        &.el-button--danger {
+            background: linear-gradient(135deg, #F56C6C 0%, #F89898 100%);
+            border: none;
+        }
+        
+        &.el-button--success {
+            background: linear-gradient(135deg, #67C23A 0%, #85CE61 100%);
+            border: none;
+        }
+    }
+    
+    // 开关样式
+    .el-switch {
+        .el-switch__core {
+            border-radius: 12px;
+        }
+    }
+    
+    // 下拉选择框
+    .el-select {
+        .el-input__inner {
+            border-radius: $radius-small;
+        }
+    }
+    
+    // Tag 标签
+    .el-tag {
+        border-radius: $radius-small;
+        padding: 0 10px;
+        height: 24px;
+        line-height: 22px;
+    }
+}
+
+// ==================== 操作按钮组 ====================
+.operation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    
+    .el-button {
+        margin: 0;
+    }
+}
+
+// ==================== 分页样式 ====================
+::v-deep .el-pagination {
+    padding: 16px 0;
+    
+    &.is-background {
+        .btn-next,
+        .btn-prev {
+            border-radius: $radius-small;
+            background-color: #fff;
+            border: 1px solid $border-color;
+            
+            &:hover {
+                color: $primary-color;
+                border-color: $primary-color;
+            }
+        }
+        
+        .el-pager li {
+            border-radius: $radius-small;
+            background-color: #fff;
+            border: 1px solid $border-color;
+            margin: 0 4px;
+            
+            &:hover {
+                color: $primary-color;
+                border-color: $primary-color;
+            }
+            
+            &.active {
+                background: linear-gradient(135deg, #409EFF 0%, #66B1FF 100%);
+                border-color: transparent;
+            }
+        }
+    }
+    
+    .el-pagination__total {
+        color: $text-secondary;
+    }
+    
+    .el-pagination__jump {
+        color: $text-secondary;
+        
+        .el-input__inner {
+            border-radius: $radius-small;
+        }
+    }
+    
+    .el-pagination__sizes {
+        .el-input__inner {
+            border-radius: $radius-small;
+        }
+    }
+}
+
+// ==================== 对话框样式 ====================
+::v-deep .el-dialog {
+    border-radius: $radius;
+    overflow: hidden;
+    box-shadow: $shadow-hover;
+    
+    .el-dialog__header {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid $border-color;
+        
+        .el-dialog__title {
+            font-size: 16px;
+            font-weight: 600;
+            color: $text-color;
+        }
+        
+        .el-dialog__headerbtn {
+            top: 20px;
+            right: 20px;
+            
+            .el-dialog__close {
+                font-size: 18px;
+                color: $text-secondary;
+                
+                &:hover {
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+    
+    .el-dialog__body {
+        padding: 24px;
+    }
+    
+    .el-dialog__footer {
+        padding: 16px 24px 20px;
+        border-top: 1px solid $border-color;
+    }
+}
+
+// ==================== 表单样式 ====================
+::v-deep .el-form {
+    .el-form-item__label {
+        color: $text-regular;
+        font-weight: 500;
+    }
+    
+    .el-input__inner,
+    .el-textarea__inner {
+        border-radius: $radius-small;
+        transition: $transition;
+        
+        &:hover {
+            border-color: $primary-color;
+        }
+        
+        &:focus {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+        }
+    }
+    
+    .el-select {
+        width: 100%;
+        
+        .el-input__inner {
+            border-radius: $radius-small;
+        }
+    }
+    
+    .el-cascader {
+        width: 100%;
+        
+        .el-input__inner {
+            border-radius: $radius-small;
+        }
+    }
+    
+    .el-radio-group {
+        .el-radio__input.is-checked .el-radio__inner {
+            border-color: $primary-color;
+            background: $primary-color;
+        }
+        
+        .el-radio__input.is-checked + .el-radio__label {
+            color: $primary-color;
+        }
+    }
+}
+
+// ==================== 卡片样式 ====================
+::v-deep .el-card {
+    border-radius: $radius;
+    border: 1px solid $border-color;
+    box-shadow: $shadow;
+    
+    .el-card__header {
+        padding: 16px 20px;
+        border-bottom: 1px solid $border-color;
+        background-color: $bg-light;
+    }
+    
+    .el-card__body {
+        padding: 20px;
+    }
+}
+
+// ==================== 树形控件样式 ====================
+::v-deep .el-tree {
+    .el-tree-node__content {
+        height: 36px;
+        border-radius: $radius-small;
+        transition: $transition;
+        
+        &:hover {
+            background-color: #ECF5FF;
+        }
+    }
+    
+    .el-tree-node.is-current > .el-tree-node__content {
+        background-color: #ECF5FF;
+        color: $primary-color;
+    }
+    
+    .el-tree-node__expand-icon {
+        color: $text-secondary;
+        
+        &.expanded {
+            color: $primary-color;
+        }
+    }
+}
+
+// ==================== 折叠面板样式 ====================
+::v-deep .el-collapse {
+    border: 1px solid $border-color;
+    border-radius: $radius;
+    overflow: hidden;
+    
+    .el-collapse-item__header {
+        padding: 0 20px;
+        height: 50px;
+        line-height: 50px;
+        background-color: $bg-light;
+        border-bottom: 1px solid $border-color;
+        font-weight: 500;
+        
+        &:hover {
+            background-color: #ECF5FF;
+        }
+    }
+    
+    .el-collapse-item__content {
+        padding: 20px;
+    }
+}
+
+// ==================== 上传组件样式 ====================
+.avatar-uploader {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed $border-light;
+    border-radius: $radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: $transition;
+    background-color: $bg-light;
+    
+    &:hover {
+        border-color: $primary-color;
+        background-color: #ECF5FF;
+        
+        .avatar-uploader-icon {
+            color: $primary-color;
+        }
+    }
+    
+    .avatar-uploader-icon {
+        font-size: 36px;
+        color: #C0C4CC;
+        transition: $transition;
+    }
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// ==================== 下拉菜单样式 ====================
+::v-deep .el-dropdown-menu {
+    border-radius: $radius;
+    box-shadow: $shadow-hover;
+    border: 1px solid $border-color;
+    padding: 6px 0;
+    
+    .el-dropdown-menu__item {
+        padding: 10px 20px;
+        font-size: 14px;
+        color: $text-regular;
+        transition: $transition;
+        
+        &:hover {
+            background-color: #ECF5FF;
+            color: $primary-color;
+        }
+        
+        i {
+            margin-right: 8px;
+        }
+    }
+}
+
+// ==================== 消息提示样式 ====================
+::v-deep .el-message {
+    border-radius: $radius;
+    box-shadow: $shadow-hover;
+}
+
+::v-deep .el-message-box {
+    border-radius: $radius;
+    box-shadow: $shadow-hover;
+    
+    .el-message-box__header {
+        padding: 20px 20px 10px;
+    }
+    
+    .el-message-box__content {
+        padding: 20px;
+    }
+    
+    .el-message-box__btns {
+        padding: 10px 20px 20px;
+        
+        .el-button {
+            border-radius: $radius-small;
+        }
+    }
+}
+
+// ==================== Tooltip 样式 ====================
+::v-deep .el-tooltip__popper {
+    border-radius: $radius-small;
+    
+    &.is-dark {
+        background-color: rgba(48, 49, 51, 0.9);
+    }
+}
+
+// ==================== 加载样式 ====================
+::v-deep .el-loading-mask {
+    background-color: rgba(255, 255, 255, 0.9);
+    
+    .el-loading-spinner {
+        .circular {
+            width: 42px;
+            height: 42px;
+        }
+        
+        .el-loading-text {
+            color: $primary-color;
+            margin-top: 10px;
+        }
+    }
+}
+
+// ==================== 用户管理页面布局 ====================
+.el-container {
+    .el-aside {
+        background: #fff;
+        border-right: 1px solid $border-color;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+        overflow-y: auto;
+        
+        // 左侧树形菜单搜索区域
+        .el-input {
+            .el-input__inner {
+                border-radius: $radius-small;
+            }
+        }
+    }
+    
+    .el-main {
+        padding: 16px;
+        background-color: $bg-color;
+        overflow-x: hidden;
+        
+        // 表格撑满
+        .el-table {
+            width: 100% !important;
+        }
+    }
+}

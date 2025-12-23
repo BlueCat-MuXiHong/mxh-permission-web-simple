@@ -133,13 +133,12 @@
                                 <el-input v-model="searchModel.phone" clearable placeholder="请输入电话"
                                          prefix-icon="el-icon-phone"></el-input>
                             </el-form-item>
-                            <el-form-item class="mobile-button-group">
+                            <div class="mobile-button-group">
                                 <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-search" size="small"
                                            type="primary" @click="search" :loading="mainLoading">查询
                                 </el-button>
                                 <el-button v-if="hasPermission('sys:user:search')" icon="el-icon-refresh-right"
-                                           size="small" @click="resetValue">
-                                    重置
+                                           size="small" @click="resetValue">重置
                                 </el-button>
                                 <el-button v-if="hasPermission('sys:user:add')"
                                            icon="el-icon-plus"
@@ -177,7 +176,7 @@
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
-                            </el-form-item>
+                            </div>
                         </el-form>
                     </el-collapse-item>
                 </el-collapse>
@@ -933,9 +932,15 @@ export default {
                 this.containerHeight = window.innerHeight - headerHeight;
                 this.tableHeight = window.innerHeight - usedHeight;
             } else {
-                let tableH = 80 //距离页面下方的高度
-                this.containerHeight = window.innerHeight - tableH
-                this.tableHeight = window.innerHeight - tableH - 250
+                // PC端：容器高度 = 窗口高度 - 顶部导航栏高度
+                const navHeight = 50; // 顶部导航栏
+                const breadcrumbHeight = 40; // 面包屑
+                const searchHeight = 60; // 搜索区域
+                const paginationHeight = 60; // 分页区域
+                const padding = 32; // 内边距
+                
+                this.containerHeight = window.innerHeight - navHeight - breadcrumbHeight;
+                this.tableHeight = this.containerHeight - searchHeight - paginationHeight - padding;
             }
         }
     },
@@ -984,26 +989,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.avatar-uploader {
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-}
-
+/* 用户头像上传样式 */
 .el-upload {
     width: 100px;
     height: 100px;
-}
-
-.avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
 }
 
 .avatar {
@@ -1012,167 +1001,23 @@ export default {
     display: block;
 }
 
-/* 移动端样式 - 参考companyList保持一致 */
-.collapse-title-container {
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    margin-right: 8px;
-    color: #409EFF;
-}
-
-.search-status-tag {
-    margin-left: 10px;
-    font-size: 12px;
-}
-
-.mobile-search-collapse {
-    margin-bottom: 15px;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid #ebeef5;
-    
-    /* 确保动画效果 - 参考companyList */
-    ::v-deep .el-collapse-item__wrap {
-        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: height;
-        overflow: hidden;
-    }
-    
-    ::v-deep .el-collapse-item__header {
-        padding: 0 15px;
-        font-size: 14px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        
-        &:hover {
-            background-color: #f5f7fa;
-        }
-        
-        .collapse-summary {
-            font-size: 12px;
-            color: #909399;
-            margin-top: 5px;
-            margin-left: 26px;
-            padding: 5px 10px;
-            background-color: #f5f7fa;
-            border-radius: 4px;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-        }
-    }
-    
-    ::v-deep .el-collapse-item__content {
-        padding: 10px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #fafafa;
-    }
-    
-    /* 添加箭头旋转动画 */
-    ::v-deep .el-collapse-item__arrow {
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-right: 8px;
-        
-        &.el-collapse-item__arrow--active {
-            transform: rotate(90deg);
-        }
-    }
-}
-
-/* 移动端搜索表单样式 - 参考companyList */
-.mobile-search-form {
-    padding: 10px;
-    background-color: #fafafa;
-    
-    .el-form-item {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 15px;
-        
-        .el-input {
-            width: 100%;
-        }
-        
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-    
-    .mobile-button-group {
-        display: flex;
-        justify-content: space-between;
-        
-        .el-button {
-            flex: 1;
-            margin: 5px 5px;
-            
-            &:first-child {
-                margin-left: 0;
-            }
-            
-            &:last-child {
-                margin-right: 0;
-            }
-        }
-        
-        .el-dropdown {
-            flex: 1;
-            
-            .el-button {
-                width: 100%;
-            }
-        }
-    }
-}
-
-.mobile-dept-search {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 0 10px;
-}
-
-.mobile-dept-search .el-input {
-    flex: 1;
-    margin-right: 10px;
-}
-
-.mobile-dept-search .el-button {
-    height: 36px;
-}
-
-/* 移动端表格样式 - 参考companyList */
-.el-table--mobile {
-    font-size: 12px;
-}
-
-.el-table--mobile th {
-    padding: 5px 0;
-}
-
-.el-table--mobile .el-button--mini {
-    padding: 5px 8px;
-    font-size: 11px;
-}
-
-/* 移动端表格阴影效果 */
-::v-deep .el-table {
-    &.el-table--mobile {
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid #ebeef5;
-    }
-}
-
-/* 修复移动端滚动条问题 */
+/* 容器布局 */
 .el-container {
     overflow: hidden !important;
+    
+    .el-main {
+        padding: 16px;
+        overflow-x: hidden;
+        
+        // 确保表格撑满
+        > .el-table {
+            width: 100% !important;
+        }
+    }
+}
+
+/* 左侧部门树样式 */
+.el-aside {
+    transition: width 0.3s;
 }
 </style>
