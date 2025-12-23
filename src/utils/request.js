@@ -4,14 +4,10 @@ import qs from 'qs'
 
 import { Message, MessageBox } from 'element-ui'
 import { clearStorage, getToken, getTokenTime, removeTokenTime, setToken, setTokenTime } from './auth'
-import config from '@/config'
 import { refreshToken } from '@/api/user'
 
 // 创建 axios 实例
 const service = axios.create({
-  // url = base url + request url
-  baseURL: config.VUE_APP_BASE_API,
-  // request timeout 毫秒
   timeout: 10000
 })
 
@@ -19,7 +15,6 @@ const service = axios.create({
  * 刷新token
  */
 function refreshTokenInfo() {
-  //设置请求参数
   let param = {
     token: getToken()
   }
@@ -30,7 +25,10 @@ function refreshTokenInfo() {
 let isRefresh = false
 
 // 请求拦截器
-service.interceptors.request.use(config => {
+service.interceptors.request.use(reqConfig => {
+    // 从 window.SYSTEM_CONFIG 读取 API 地址
+    reqConfig.baseURL = window.SYSTEM_CONFIG.VUE_APP_BASE_API
+    
     //获取当前系统时间
     let currentTime = new Date().getTime()
     //获取token过期时间
@@ -53,9 +51,9 @@ service.interceptors.request.use(config => {
               setToken(res.data.token)
               setTokenTime(res.data.expireTime)
               //将新的token添加到header头部
-              config.headers.token = getToken()
+              reqConfig.headers.token = getToken()
             }
-            return config
+            return reqConfig
           }).catch(error => {
             //清空sessionStorage
             clearStorage()
@@ -69,9 +67,9 @@ service.interceptors.request.use(config => {
     }
 
     if (store.getters.token) {
-      config.headers['token'] = getToken()
+      reqConfig.headers['token'] = getToken()
     }
-    return config
+    return reqConfig
   },
   error => {
     return Promise.reject(error)

@@ -11,8 +11,8 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <!-- 引入外部配置文件 -->
-    <script src="./config.js"></script>
+    <!-- 引入外部配置文件（添加时间戳防止缓存） -->
+    <script src="./config.js?v=<%= Date.now() %>"></script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>

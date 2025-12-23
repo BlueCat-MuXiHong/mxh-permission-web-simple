@@ -455,7 +455,9 @@ import {getToken} from '@/utils/auth'
 import Flex from '@/components/Flex/Flex.vue'
 import {getAllRoleList} from '@/api/role'
 import hasPermission from '@/router/permission'
-import config from '@/config/index.js'
+
+// 获取API基础地址
+const getBaseAPI = () => window.SYSTEM_CONFIG?.VUE_APP_BASE_API || ''
 
 export default {
     components: {Flex, SystemDialog},
@@ -526,10 +528,10 @@ export default {
             },
             roleOptions: [],
             uploadHeader: {'token': getToken()},
-            uploadUrl: config.VUE_APP_BASE_API + '/file/upload',
-            uploadUserListUrl: config.VUE_APP_BASE_API + `/sysUser/importUser?token=${getToken()}`,
-            downUserTemplateUrl: config.VUE_APP_BASE_API + `/sysUser/downloadUserTemplate?token=${getToken()}`,
-            exportUserUrl: config.VUE_APP_BASE_API + `/sysUser/exportUser?token=${getToken()}`,
+            uploadUrl: getBaseAPI() + '/file/upload',
+            uploadUserListUrl: getBaseAPI() + `/sysUser/importUser?token=${getToken()}`,
+            downUserTemplateUrl: getBaseAPI() + `/sysUser/downloadUserTemplate?token=${getToken()}`,
+            exportUserUrl: getBaseAPI() + `/sysUser/exportUser?token=${getToken()}`,
             
             importErrorVisible: false,
             errorMessages: []

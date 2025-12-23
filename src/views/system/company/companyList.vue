@@ -221,7 +221,9 @@ import SystemDialog from '@/components/Dialog/SystemDialog.vue'
 import Flex from '@/components/Flex/Flex.vue'
 import {getToken} from '@/utils/auth'
 import hasPermission from '@/router/permission'
-import config from '@/config/index.js'
+
+// 获取API基础地址
+const getBaseAPI = () => window.SYSTEM_CONFIG?.VUE_APP_BASE_API || ''
 
 export default {
     components: {Flex, SystemDialog},
@@ -258,7 +260,7 @@ export default {
             total: 0,//总条数,
             //上传需要携带的数据
             uploadHeader: {'token': getToken()},
-            uploadUrl: config.VUE_APP_BASE_API + '/file/upload',
+            uploadUrl: getBaseAPI() + '/file/upload',
             resizeFlag: null // 用于防抖resize事件
         }
     },

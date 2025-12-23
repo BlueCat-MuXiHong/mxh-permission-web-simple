@@ -80,7 +80,6 @@
 <script>
 import {ask} from '../../../api/ai';
 import {getToken} from '@/utils/auth';
-import config from '@/config';
 import {marked} from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css'; // 引入代码高亮样式
@@ -194,7 +193,7 @@ export default {
     async connectSSE(taskId) {
       console.log('connectSSE', taskId);
       try {
-        const url = `${config.VUE_APP_BASE_API}/chat/stream/${taskId}`;
+        const url = `${window.SYSTEM_CONFIG?.VUE_APP_BASE_API || ''}/chat/stream/${taskId}`;
         const response = await fetch(url, {
           headers: {
             'token': getToken()
