@@ -305,13 +305,15 @@ export default {
          * 验证成功处理
          */
         onVerifySuccess() {
-            const {text, slider} = this.elements
+            const {text, slider, background} = this.elements
             
             // 更新UI状态
             text.innerHTML = '验证成功'
-            text.style.color = '#53C300'
-            slider.innerHTML = '<i class="el-icon-success"></i>'
-            slider.style.color = '#53C300'
+            text.style.cssText = 'color: #53C300; animation: none; -webkit-text-fill-color: #53C300;'
+            slider.innerHTML = '<i class="el-icon-check"></i>'
+            slider.style.color = '#fff'
+            slider.style.backgroundColor = '#53C300'
+            background.style.transition = 'none'
             
             // 更新验证状态
             this.isVerified = true
@@ -336,19 +338,21 @@ export default {
         resetSlider() {
             const {text, slider, background} = this.elements
             
+            // 添加过渡效果
+            slider.style.transition = 'left 0.3s ease'
+            background.style.transition = 'width 0.3s ease'
+            
             // 重置位置和样式
             this.offsetX = 0
             slider.style.left = '0'
             background.style.width = '0'
             
-            // 添加过渡效果
-            slider.style.transition = 'left 1s ease'
-            background.style.transition = 'width 1s ease'
-            
             // 重置文本和图标
             text.innerHTML = this.content
+            text.style.cssText = ''
             slider.innerHTML = '<i class="el-icon-d-arrow-right"></i>'
-            slider.style.color = '#3fcd26'
+            slider.style.color = '#53C300'
+            slider.style.backgroundColor = '#fff'
         },
         
         /**
@@ -379,7 +383,6 @@ export default {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "微软雅黑", serif;
 }
 
 /* 滑块容器样式 */
@@ -389,16 +392,18 @@ export default {
     background-color: #e8e8e8;
     position: relative;
     margin: 0 auto;
-    border-radius: 3px;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 /* 背景条样式 */
 .background {
-    width: 2.5rem;
+    width: 0;
     height: 100%;
     position: absolute;
-    background-color: #53C300;
-    border-radius: 3px 0 0 3px;
+    background: linear-gradient(to right, #53C300, #5cb85c);
+    border-radius: 4px 0 0 4px;
+    transition: width 0.1s ease;
 }
 
 /* 提示文字样式 */
@@ -408,48 +413,66 @@ export default {
     height: 100%;
     text-align: center;
     user-select: none;
+    font-size: 14px;
+    letter-spacing: 2px;
 }
 
 /* 滑块样式 */
 .slider {
     width: 2.5rem;
-    height: 2.375rem;
+    height: 100%;
     position: absolute;
-    border: 1px solid #ccc;
-    cursor: move;
-    font-family: "宋体", serif;
+    left: 0;
+    top: 0;
+    cursor: grab;
     text-align: center;
-    background-color: #fff;
+    background: #fff;
     user-select: none;
-    color: #666;
+    color: #53C300;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.2s ease;
+    
+    &:hover {
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    &:active {
+        cursor: grabbing;
+    }
+    
+    i {
+        font-size: 18px;
+    }
 }
 
-/* 文字阴影效果 */
+/* 文字渐变动画效果 */
 .shadow {
-    text-align: center;
     background: linear-gradient(
-            to right,
-            #4d4d4d 0%,
-            #5d5d5d 20%,
-            #6d6d6d 40%,
-            white 50%,
-            #6d6d6d 60%,
-            #5d5d5d 80%,
-            #4d4d4d 100%
+        to right,
+        #888 0%,
+        #aaa 25%,
+        #ccc 50%,
+        #aaa 75%,
+        #888 100%
     );
+    background-size: 200% 100%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: animate 3s infinite;
+    animation: shimmer 2.5s ease-in-out infinite;
 }
 
-/* 文字动画 */
-@keyframes animate {
-    from {
-        background-position: -80px;
+@keyframes shimmer {
+    0% {
+        background-position: 100% center;
     }
-    to {
-        background-position: 80px;
+    100% {
+        background-position: -100% center;
     }
 }
 </style>

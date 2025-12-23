@@ -47,17 +47,17 @@
                 </span>
             </el-form-item>
             
-            <!--滑块验证-->
-            <el-form-item v-if="captchaOnOff" prop="code">
+            <!--滑块验证（未完成时显示）-->
+            <el-form-item v-if="captchaOnOff && !showVerify" prop="code">
                 <SliderVerify ref="sliderVerify" v-model="loginForm.isLock" @change="handlerLock"></SliderVerify>
             </el-form-item>
             
-            <!--滑块与点击验证-->
+            <!--滑块与点击验证（滑块完成后显示）-->
             <el-form-item v-if="captchaOnOff && showVerify">
                 <Verify ref="verify"
                         :captchaType="loginForm.captchaType"
                         :imgSize="{ width: '100%', height: '170px' }"
-                        :mode="'pop'"
+                        :mode="'fixed'"
                         @success="captchaCheckSuccess"></Verify>
             </el-form-item>
             
@@ -104,15 +104,18 @@ export default {
                     this.$message.error('请填写正确的用户名和密码')
                     return
                 }
-                // 验证滑块是否已通过
-                if (!this.loginForm.isLock || !this.loginForm.code || this.loginForm.code.trim() === '') {
-                    this.$message.error('请先完成验证')
-                    return
-                }
-                // 如果Verify验证未完成，则显示验证框
-                if (!this.loginForm.code) {
-                    this.$refs.verify.show()
-                    return
+                // 验证码开关打开时，检查验证状态
+                if (this.captchaOnOff) {
+                    // 第一步滑块未完成
+                    if (!this.loginForm.isLock) {
+                        this.$message.error('请先完成滑块验证')
+                        return
+                    }
+                    // 第二步验证未完成
+                    if (!this.loginForm.code || this.loginForm.code.trim() === '') {
+                        this.$message.error('请完成图片验证')
+                        return
+                    }
                 }
                 this.loading = true
                 // 执行登录逻辑

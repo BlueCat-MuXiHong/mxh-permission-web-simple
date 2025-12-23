@@ -314,10 +314,11 @@ export default {
                             : this.backToken +
                             '---' +
                             JSON.stringify({x: moveLeftDistance, y: 5.0})
+                        // 立即触发success事件，不再延迟
+                        this.$parent.$emit('success', {captchaVerification})
                         setTimeout(() => {
                             this.tipWords = ''
                             this.$parent.closeBox()
-                            this.$parent.$emit('success', {captchaVerification})
                         }, 1000)
                     } else {
                         this.moveBlockBackgroundColor = '#d9534f'
@@ -426,7 +427,7 @@ export default {
     width: 100%;
     height: auto;
     background: #f7f9fa;
-    border-radius: 4px 4px 0 0;
+    border-radius: 8px 8px 0 0;
     overflow: hidden;
     margin: 0;
     padding: 0;
@@ -444,149 +445,163 @@ export default {
     padding: 0 !important;
 }
 
-/*滑动验证码*/
+/* 底部滑动条区域 */
 .verify-bar-area {
     position: relative;
-    background: #ffffff;
+    background: #f0f2f5;
     text-align: center;
     box-sizing: content-box;
-    -webkit-border-radius: 0 0 4px 4px;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e8e8e8;
+    border-top: none;
 }
 
+/* 滑块按钮 */
 .verify-bar-area .verify-move-block {
     position: absolute;
     top: 0;
     left: 0;
-    background: #fff;
-    cursor: pointer;
+    background: linear-gradient(180deg, #fff 0%, #f8f8f8 100%);
+    cursor: grab;
     box-sizing: content-box;
-    box-shadow: 0 0 2px #888888;
-    -webkit-border-radius: 1px;
-    border-radius: 1px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .verify-bar-area .verify-move-block:hover {
-    background-color: #337ab7;
-    color: #ffffff;
+    background: linear-gradient(180deg, #1890ff 0%, #096dd9 100%);
+    border-color: #1890ff;
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.35);
 }
 
+.verify-bar-area .verify-move-block:hover .verify-icon {
+    color: #fff !important;
+}
+
+.verify-bar-area .verify-move-block:active {
+    cursor: grabbing;
+}
+
+/* 滑过的轨道 */
 .verify-bar-area .verify-left-bar {
     position: absolute;
     top: 0;
     left: 0;
-    background: linear-gradient(to right, #53C300, #5cb85c);
+    background: linear-gradient(to right, rgba(24, 144, 255, 0.2), rgba(24, 144, 255, 0.3));
     cursor: pointer;
     box-sizing: content-box;
-    transition: all 0.3s ease;
+    border-radius: 0 0 0 8px;
+    transition: all 0.2s ease;
 }
 
 /* 验证成功时的滑轨样式 */
 .verify-bar-area .verify-left-bar.success {
-    background: linear-gradient(to right, #5cb85c, #53C300);
-    color: #FFFFFF;
-    border: none;
+    background: linear-gradient(to right, rgba(82, 196, 26, 0.3), rgba(82, 196, 26, 0.4));
 }
 
 /* 验证失败时的滑轨样式 */
 .verify-bar-area .verify-left-bar.error {
-    background: linear-gradient(to right, #d9534f, #ff5e5e);
-    border: none;
+    background: linear-gradient(to right, rgba(255, 77, 79, 0.3), rgba(255, 77, 79, 0.4));
 }
 
 .verify-img-panel {
     margin: 0;
     box-sizing: border-box;
-    border-radius: 1px;
+    border-radius: 8px 8px 0 0;
     position: relative;
     overflow: hidden;
+    border: 1px solid #e8e8e8;
+    border-bottom: none;
 }
 
+/* 刷新按钮 */
 .verify-img-panel .verify-refresh {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     text-align: center;
     padding: 0;
     cursor: pointer;
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 8px;
+    right: 8px;
     z-index: 2;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.85);
     border-radius: 50%;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.verify-img-panel .verify-refresh {
-    width: 18px;
-    height: 18px;
-    color: #337ab7;
-}
-
 .verify-img-panel .verify-refresh:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-    transform: rotate(30deg);
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: rotate(180deg);
 }
 
-.verify-img-panel .verify-refresh i {
-    font-size: 20px;
-    color: #337ab7;
+.verify-img-panel .verify-refresh i,
+.verify-img-panel .verify-refresh svg {
+    font-size: 16px;
+    color: #1890ff;
 }
 
 .verify-img-panel {
     background-color: #fff;
     position: relative;
     z-index: 2;
-    border: 1px solid #fff;
 }
 
+/* 拼图滑块 */
 .verify-bar-area .verify-move-block .verify-sub-block {
     position: absolute;
     text-align: center;
     z-index: 3;
-    /* border: 1px solid #fff; */
 }
 
+/* 滑块图标 */
 .verify-bar-area .verify-move-block .verify-icon {
-    font-size: 20px;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
+    color: #1890ff;
+    transition: color 0.2s ease;
 }
 
 .verify-bar-area .verify-msg {
     z-index: 3;
+    font-size: 14px;
+    letter-spacing: 1px;
 }
 
+/* 验证提示 */
 .verify-tips {
     position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 30px;
-    line-height: 30px;
+    height: 32px;
+    line-height: 32px;
     color: #fff;
     text-align: center;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.3s ease;
 }
 
 .suc-bg {
-    background-color: rgba(83, 195, 0, 0.8);
-    animation: fadeIn 0.5s ease;
+    background-color: rgba(82, 196, 26, 0.9);
+    animation: fadeIn 0.3s ease;
 }
 
 .err-bg {
-    background-color: rgba(255, 59, 48, 0.8);
-    animation: shake 0.5s ease;
+    background-color: rgba(255, 77, 79, 0.9);
+    animation: shake 0.4s ease;
 }
 
 @keyframes fadeIn {
@@ -601,49 +616,31 @@ export default {
 }
 
 @keyframes shake {
-    0% {
-        transform: translateX(0);
-    }
-    25% {
-        transform: translateX(-5px);
-    }
-    50% {
-        transform: translateX(5px);
-    }
-    75% {
-        transform: translateX(-5px);
-    }
-    100% {
-        transform: translateX(0);
-    }
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
 }
 
-/* 提示文字动画 - 反向平滑版 */
+/* 提示文字动画 */
 .verify-msg {
     background: linear-gradient(
         to right,
-        #666 0%,
-        #888 20%,
-        #aaa 40%,
-        #ddd 60%,
-        #aaa 80%,
-        #888 90%,
-        #666 100%
+        #999 0%,
+        #bbb 30%,
+        #999 50%,
+        #bbb 70%,
+        #999 100%
     );
     background-size: 200% 100%;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: animate 4s linear infinite;
+    animation: shimmer 2s ease-in-out infinite;
 }
 
-@keyframes animate {
-    0% {
-        background-position: 200% center;
-    }
-    100% {
-        background-position: 0 center;
-    }
+@keyframes shimmer {
+    0% { background-position: 100% center; }
+    100% { background-position: -100% center; }
 }
 
 /* Loading动画样式 */
@@ -656,14 +653,15 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.8);
     z-index: 999;
     pointer-events: none;
+    border-radius: 8px 8px 0 0;
 }
 
 .verify-loading ~ .verify-bar-area {
     pointer-events: none;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .verify-check-loading {
@@ -675,26 +673,23 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.8);
     z-index: 999;
     pointer-events: none;
+    border-radius: 0 0 8px 8px;
 }
 
 .verify-loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #337ab7;
+    width: 36px;
+    height: 36px;
+    border: 3px solid #f0f0f0;
+    border-top: 3px solid #1890ff;
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 </style>
